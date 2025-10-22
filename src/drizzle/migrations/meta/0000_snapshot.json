@@ -1,7 +1,7 @@
 {
   "version": "6",
   "dialect": "sqlite",
-  "id": "72dbd51c-7d7e-4b58-886f-9546edf5c478",
+  "id": "5bcb6ade-6c60-4cb8-954b-3cce6966b2f6",
   "prevId": "00000000-0000-0000-0000-000000000000",
   "tables": {
     "waitlist_form_table": {
@@ -23,19 +23,17 @@
         },
         "created_at": {
           "name": "created_at",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": "(current_timestamp)"
+          "autoincrement": false
         },
         "updated_at": {
           "name": "updated_at",
-          "type": "integer",
+          "type": "text",
           "primaryKey": false,
           "notNull": true,
-          "autoincrement": false,
-          "default": "(current_timestamp)"
+          "autoincrement": false
         }
       },
       "indexes": {
