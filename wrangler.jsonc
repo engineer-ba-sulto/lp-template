@@ -20,7 +20,7 @@
       "binding": "lp_template_db",
       "database_name": "lp-template-db",
       "database_id": "d83191fa-50f2-42f0-81a0-2adaf99a26fd",
-      "migrations_dir": "drizzle/migrations"
+      "migrations_dir": "src/drizzle/migrations"
     }
   ]
   /**
