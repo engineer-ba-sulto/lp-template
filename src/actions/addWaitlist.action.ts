@@ -2,8 +2,9 @@
 
 import { getDb } from "@/drizzle/db";
 import { waitlistFormTable } from "@/drizzle/schema/waitlistFormSchema";
-import { WaitlistForm } from "@/types/waitlistForm";
+import { type WaitlistForm } from "@/types/waitlistForm";
 import { eq } from "drizzle-orm";
+import { redirect } from "next/navigation";
 
 export async function addWaitlist(data: WaitlistForm) {
   const db = await getDb();
@@ -11,13 +12,13 @@ export async function addWaitlist(data: WaitlistForm) {
     await db.insert(waitlistFormTable).values({
       email: data.email,
     });
-    return { success: true, message: "ウェイトリストに追加されました" };
   } catch (error: unknown) {
     if (error instanceof Error) {
       return { success: false, message: error.message };
     }
     return { success: false, message: "不明なエラーが発生しました" };
   }
+  redirect("/thank-you");
 }
 
 export async function checkWaitlist(data: WaitlistForm) {
