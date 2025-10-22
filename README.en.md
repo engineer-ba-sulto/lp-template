@@ -127,3 +127,31 @@ Next, apply to the remote database.
 ```bash
 npx wrangler d1 migrations apply <YOUR_DATABASE_NAME>
 ```
+
+### 5. Update Database Connection Code
+
+Update the `src/drizzle/db.ts` file to connect to the database using the binding name you configured in `wrangler.jsonc`.
+
+Replace `waitlist_lp_template_db` in `env.waitlist_lp_template_db` with `<YOUR_DATABASE_BINDING_NAME>`.
+
+**Before:** `src/drizzle/db.ts`
+
+```typescript
+// ...
+export const getDb = async () => {
+  const { env } = await getCloudflareContext({ async: true });
+  return drizzle(env.waitlist_lp_template_db);
+};
+// ...
+```
+
+**After (Example):** `src/drizzle/db.ts`
+
+```typescript
+// ...
+export const getDb = async () => {
+  const { env } = await getCloudflareContext({ async: true });
+  return drizzle(env.<YOUR_DATABASE_BINDING_NAME>);
+};
+// ...
+```

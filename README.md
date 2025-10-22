@@ -112,7 +112,7 @@ declare namespace Cloudflare {
 
 ### 4. マイグレーションの適用
 
-最後に、データベーススキーマのマイグレーションを適用します。
+まず、データベーススキーマのマイグレーションを適用します。
 ステップ 1 で作成したデータベース名を使用してください。
 
 まず、ローカルのデータベースに適用します。
@@ -125,4 +125,32 @@ npx wrangler d1 migrations apply <あなたのデータベース名> --local
 
 ```bash
 npx wrangler d1 migrations apply <あなたのデータベース名>
+```
+
+### 5. データベース接続コードの更新
+
+`src/drizzle/db.ts` ファイルを更新して、`wrangler.jsonc` で設定したバインディング名でデータベースに接続するようにします。
+
+`env.waitlist_lp_template_db` の `waitlist_lp_template_db` を、`<あなたのデータベースバインディング名>`に置き換えてください。
+
+**変更前:** `src/drizzle/db.ts`
+
+```typescript
+// ...
+export const getDb = async () => {
+  const { env } = await getCloudflareContext({ async: true });
+  return drizzle(env.waitlist_lp_template_db);
+};
+// ...
+```
+
+**変更後 (例):** `src/drizzle/db.ts`
+
+```typescript
+// ...
+export const getDb = async () => {
+  const { env } = await getCloudflareContext({ async: true });
+  return drizzle(env.<あなたのデータベースバインディング名>);
+};
+// ...
 ```
