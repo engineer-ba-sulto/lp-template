@@ -1,4 +1,9 @@
 import ThankYouMessage from "@/components/feature/ThankYouMessage";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Thanks",
+};
 
 export default function ThankYouPage() {
   return (

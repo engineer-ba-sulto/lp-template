@@ -1,4 +1,9 @@
 import WaitlistForm from "@/components/feature/WaitlistForm";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Waitlist",
+};
 
 export default function Home() {
   return (
