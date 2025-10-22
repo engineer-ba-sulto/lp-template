@@ -5,6 +5,8 @@
 ## ✨ 機能
 
 - **ウェイトリストフォーム**: ユーザーをウェイトリストに登録するためのフォームです。
+- **サンクスページ**: 登録成功後に表示される感謝のページです。
+- **SNS 共有機能**: サンクスページから X（旧 Twitter）でサービスを共有できます。
 
 ## 🛠️ 技術スタック
 
@@ -13,6 +15,7 @@
 - [Next.js](https://nextjs.org/) - 本番環境向けの React フレームワーク
 - [React Hook Form](https://react-hook-form.com/) - 使いやすいバリデーション機能を備えた、高パフォーマンスで柔軟かつ拡張可能なフォーム
 - [Zod](https://zod.dev/) - 静的型推論を備えた TypeScript ファーストのスキーマバリデーション
+- [react-share](https://github.com/nygardk/react-share) - SNS 共有ボタンを簡単に実装するための React コンポーネント
 
 ### UI
 
@@ -55,7 +58,7 @@ bun install
 次に、開発サーバーを起動します:
 
 ```bash
-bun dev
+bun run dev
 ```
 
 ブラウザで [http://localhost:3000](http://localhost:3000) を開いて結果を確認してください。

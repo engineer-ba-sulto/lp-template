@@ -5,6 +5,8 @@ This is a template project for building landing pages using Next.js, deployed on
 ## ✨ Features
 
 - **Waitlist Form**: A form to register users to a waitlist.
+- **Thank You Page**: A page to thank users after successful registration.
+- **Social Share Feature**: Allows sharing the service on X (formerly Twitter) from the thank you page.
 
 ## 🛠️ Tech Stack
 
@@ -13,6 +15,7 @@ This is a template project for building landing pages using Next.js, deployed on
 - [Next.js](https://nextjs.org/) - React framework for production
 - [React Hook Form](https://react-hook-form.com/) - Performant, flexible and extensible forms with easy-to-use validation.
 - [Zod](https://zod.dev/) - TypeScript-first schema validation with static type inference
+- [react-share](https://github.com/nygardk/react-share) - React components for social media sharing buttons.
 
 ### UI
 
@@ -55,7 +58,7 @@ bun install
 Next, run the development server:
 
 ```bash
-bun dev
+bun run dev
 ```
 
 Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
