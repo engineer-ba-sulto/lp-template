@@ -1,129 +1,128 @@
-# LP Template with Next.js & Cloudflare
+# Next.js & Cloudflare を利用した LP テンプレート
 
-This is a template project for building landing pages using Next.js, deployed on Cloudflare Workers.
+これは Next.js を使用して構築し、Cloudflare Workers にデプロイするためのランディングページ用テンプレートプロジェクトです。
 
-## ✨ Features
+## ✨ 機能
 
-- **Waitlist Form**: A form to register users to a waitlist.
+- **ウェイトリストフォーム**: ユーザーをウェイトリストに登録するためのフォームです。
 
-## 🛠️ Tech Stack
+## 🛠️ 技術スタック
 
-### Frameworks & Libraries
+### フレームワーク & ライブラリ
 
-- [Next.js](https://nextjs.org/) - React framework for production
-- [React Hook Form](https://react-hook-form.com/) - Performant, flexible and extensible forms with easy-to-use validation.
-- [Zod](https://zod.dev/) - TypeScript-first schema validation with static type inference
+- [Next.js](https://nextjs.org/) - 本番環境向けの React フレームワーク
+- [React Hook Form](https://react-hook-form.com/) - 使いやすいバリデーション機能を備えた、高パフォーマンスで柔軟かつ拡張可能なフォーム
+- [Zod](https://zod.dev/) - 静的型推論を備えた TypeScript ファーストのスキーマバリデーション
 
 ### UI
 
-- [Tailwind CSS](https://tailwindcss.com/) - A utility-first CSS framework
-- [shadcn/ui](https://ui.shadcn.com/) - Re-usable components built using Radix UI and Tailwind CSS.
-- [Sonner](https://sonner.emilkowal.ski/) - An opinionated toast component for React.
+- [Tailwind CSS](https://tailwindcss.com/) - ユーティリティファーストの CSS フレームワーク
+- [shadcn/ui](https://ui.shadcn.com/) - Radix UI と Tailwind CSS を使用して構築された再利用可能なコンポーネント
+- [Sonner](https://sonner.emilkowal.ski/) - React 用のトーストコンポーネント
 
-### Backend & Database
+### バックエンド & データベース
 
-- [Cloudflare Workers](https://workers.cloudflare.com/) - Deployment Platform
-- [Drizzle ORM](https://orm.drizzle.team/) - TypeScript ORM that feels like writing SQL
-- [Cloudflare D1](https://developers.cloudflare.com/d1/) - Serverless SQL Database
+- [Cloudflare Workers](https://workers.cloudflare.com/) - デプロイメントプラットフォーム
+- [Drizzle ORM](https://orm.drizzle.team/) - SQL を書いているかのような感覚で使える TypeScript ORM
+- [Cloudflare D1](https://developers.cloudflare.com/d1/) - サーバーレス SQL データベース
 
-### Language & Runtime
+### 言語 & ランタイム
 
 - [TypeScript](https://www.typescriptlang.org/)
 - [Bun](https://bun.sh/)
 
-## 📂 Directory Structure
+## 📂 ディレクトリ構成
 
 ```
 src/
 ├── app/                # Next.js App Router
 ├── actions/            # Server Actions
-├── components/         # UI components
-├── drizzle/            # Drizzle ORM (schema, migrations)
-├── lib/                # Utility functions
-├── types/              # TypeScript types
-└── zod/                # Zod validation schemas
+├── components/         # UIコンポーネント
+├── drizzle/            # Drizzle ORM (スキーマ, マイグレーション)
+├── lib/                # ユーティリティ関数
+├── types/              # TypeScriptの型定義
+└── zod/                # Zodバリデーションスキーマ
 ```
 
-## 🚀 Getting Started
+## 🚀 はじめに
 
-First, install the dependencies:
+まず、依存関係をインストールします:
 
 ```bash
 bun install
 ```
 
-Next, run the development server:
+次に、開発サーバーを起動します:
 
 ```bash
 bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+ブラウザで [http://localhost:3000](http://localhost:3000) を開いて結果を確認してください。
 
-## 📦 Database Setup (Cloudflare D1)
+## 📦 データベースのセットアップ (Cloudflare D1)
 
-This project uses Cloudflare D1 as its database. Follow these steps to set it up.
+このプロジェクトではデータベースとして Cloudflare D1 を使用します。以下の手順でセットアップしてください。
 
-### 1. Create a D1 Database
+### 1. D1 データベースの作成
 
-Choose a name for your database and create it using the following command. Replace `<YOUR_DATABASE_NAME>` with the name you have chosen.
+データベースの名前を任意に決めて、以下のコマンドで作成します。`<あなたのデータベース名>` の部分を、決めた名前に置き換えてください。
 
 ```bash
-npx wrangler d1 create <YOUR_DATABASE_NAME>
+npx wrangler d1 create <あなたのデータベース名>
 ```
 
-This command will create the database and update your `wrangler.jsonc` file with the connection details.
+このコマンドでデータベースが作成され、`wrangler.jsonc`ファイルに接続情報が追記されます。
 
-### 2. Configure `wrangler.jsonc`
+### 2. `wrangler.jsonc` の設定
 
-After the file is updated, you need to configure the database binding.
+ファイルが更新された後、データベースのバインディングを設定します。
 
-1.  **Add migrations path (Required):** Add the `migrations_dir` property to point to your migration files.
-2.  **Set a binding name (Optional):** Change the default `"binding": "<YOUR_DATABASE_BINDING_NAME>"` to a name of your choice (e.g., `"binding": "MY_DB"`). This binding name will be used to access the database from your code. If you are fine with the default name, this change is not required.
+1.  **マイグレーションパスを追加（必須）:** `migrations_dir` プロパティを追加して、マイグレーションファイルを指定します。
+2.  **バインディング名を設定（任意）:** デフォルトの `"binding": "<あなたのデータベースバインディング名>"` を任意の名前に変更します (例: `"binding": "MY_DB"`)。この名前でコードからデータベースにアクセスします。デフォルトの名前で問題ない場合は、この変更は必須ではありません。
 
-Your configuration should look like this:
+設定は以下のようになります:
 
 ```jsonc:wrangler.jsonc
 "d1_databases": [
   {
-    "binding": "<YOUR_DATABASE_BINDING_NAME>",
-    "database_name": "<YOUR_DATABASE_NAME>",
+    "binding": "<あなたのデータベースバインディング名>",
+    "database_name": "<あなたのデータベース名>",
     "database_id": "...",
     "migrations_dir": "src/drizzle/migrations"
   }
 ]
 ```
 
-### 3. Update Type Definitions
+### 3. 型定義の更新
 
-Next, manually update the Cloudflare environment type definitions in `cloudflare-env.d.ts`.
-Add the `<YOUR_DATABASE_BINDING_NAME>` you set in `wrangler.jsonc` to the `Cloudflare.Env` interface.
+次に、`cloudflare-env.d.ts` の型定義を手動で更新します。
+`wrangler.jsonc` で設定した `<あなたのデータベースバインディング名>` を `Cloudflare.Env` インターフェースに追加してください。
 
 ```typescript:cloudflare-env.d.ts
 declare namespace Cloudflare {
   interface Env {
-    // ... other bindings
-    <YOUR_DATABASE_BINDING_NAME>: D1Database;
+    // ... 他に設定したバインディング
+    <あなたのデータベースバインディング名>: D1Database;
   }
 }
 ```
 
-> **Warning**
-> The `cloudflare-env.d.ts` file is managed by Wrangler. Your manual changes will be overwritten if you run `bunx wrangler types`. It is highly recommended to use this command instead of editing the file manually.
+> **警告** > `cloudflare-env.d.ts` ファイルは Wrangler によって管理されています。手動で加えた変更は、将来 `bunx wrangler types` を実行すると上書きされます。このステップは、手動で編集する代わりにこのコマンドを使用することを強く推奨します。
 
-### 4. Apply Migrations
+### 4. マイグレーションの適用
 
-Finally, apply the database schema migrations.
-Use the database name you created in Step 1.
+最後に、データベーススキーマのマイグレーションを適用します。
+ステップ 1 で作成したデータベース名を使用してください。
 
-First, apply to the local database.
+まず、ローカルのデータベースに適用します。
 
 ```bash
-npx wrangler d1 migrations apply <YOUR_DATABASE_NAME> --local
+npx wrangler d1 migrations apply <あなたのデータベース名> --local
 ```
 
-Next, apply to the remote database.
+次に、リモートのデータベースに適用します。
 
 ```bash
-npx wrangler d1 migrations apply <YOUR_DATABASE_NAME>
+npx wrangler d1 migrations apply <あなたのデータベース名>
 ```
