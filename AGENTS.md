@@ -113,10 +113,12 @@ src/
 ├── constants/          # Constants and configuration
 ├── hooks/              # Custom React hooks
 ├── types/              # TypeScript type definitions
-├── utils/              # Business logic, helpers, external service clients
+├── lib/                # Business logic, helpers, external service clients
+│   ├── date.ts         # Date utilities
+│   └── utils.ts        # Utility functions for clsx and tailwind-merge
 ├── zod/                # Zod validation schemas
 ├── drizzle/            # Drizzle: database client, schema, migrations
-│   └── schema/         # Drizzle schema definitions (split by feature)
+│   └── schema/         # Drizzle schema definitions
 └── providers/          # React Context providers
 ```
 
