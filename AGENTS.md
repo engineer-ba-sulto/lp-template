@@ -113,7 +113,7 @@ src/
 ├── types/              # TypeScript type definitions
 ├── utils/              # Business logic, helpers, external service clients
 ├── zod/                # Zod validation schemas
-├── db/                 # Drizzle: database client, schema, migrations
+├── drizzle/            # Drizzle: database client, schema, migrations
 │   └── schema/         # Drizzle schema definitions (split by feature)
 └── providers/          # React Context providers
 ```
@@ -147,7 +147,7 @@ Zod Schemas (Validation)
 
 Database Schemas (Drizzle)
 
-- camelCase. Suffix with `Schema.ts`. Located in `src/db/schema/`. Tables should be plural camelCase and suffixed with `Table`. Tables should be defined in the schema file.
+- camelCase. Suffix with `Schema.ts`. Located in `src/drizzle/schema/`. Tables should be plural camelCase and suffixed with `Table`. Tables should be defined in the schema file.
 - userSchema.ts, productSchema.ts (defines `usersTable`, `productsTable` tables)
 
 Utils/Lib

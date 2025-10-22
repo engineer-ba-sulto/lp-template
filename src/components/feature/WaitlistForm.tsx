@@ -1,5 +1,6 @@
 "use client";
 
+import { addWaitlist } from "@/actions/addWaitlist.action";
 import { Button } from "@/components/ui/button";
 import { Field, FieldError, FieldGroup } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
@@ -10,31 +11,42 @@ import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 
 export default function WaitlistForm() {
-  const waitlistForm = useForm<WaitlistForm>({
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+    reset,
+  } = useForm<WaitlistForm>({
     resolver: zodResolver(waitlistFormSchema),
     defaultValues: {
       email: "",
     },
   });
 
-  function onSubmit(data: WaitlistForm) {
-    toast("You submitted the following values:", {
-      description: (
-        <pre className="bg-code text-code-foreground mt-2 w-[320px] overflow-x-auto rounded-md p-4">
-          <code>{JSON.stringify(data, null, 2)}</code>
-        </pre>
-      ),
-      position: "top-center",
-    });
+  async function onSubmit(data: WaitlistForm) {
+    const result = await addWaitlist(data);
+    if (result.success) {
+      toast.success(result.message, {
+        position: "top-center",
+      });
+      reset();
+    } else {
+      toast.error(result.message, {
+        position: "top-center",
+        classNames: {
+          content: "text-red-500 font-bold",
+        },
+      });
+    }
   }
 
   return (
     <div className="w-full sm:max-w-md">
-      <form id="waitlist-form" onSubmit={waitlistForm.handleSubmit(onSubmit)}>
+      <form id="waitlist-form" onSubmit={handleSubmit(onSubmit)}>
         <FieldGroup>
           <Controller
             name="email"
-            control={waitlistForm.control}
+            control={control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
                 <Input
@@ -44,9 +56,7 @@ export default function WaitlistForm() {
                   placeholder="Enter your email"
                   autoComplete="email"
                 />
-                {fieldState.invalid && (
-                  <FieldError errors={[fieldState.error]} />
-                )}
+                {fieldState.invalid && <FieldError errors={[errors.email]} />}
               </Field>
             )}
           />
