@@ -100,26 +100,37 @@ Split into app/, hooks/, utils/, providers/, etc.
 
 ```
 src/
-├── app/                # Next.js App Router: pages, layouts, route handlers
-│   ├── (auth)/         # Route group for authentication pages
+├── app/                   # Next.js App Router: pages, layouts, route handlers
+│   ├── (auth)/            # Route group for authentication pages (e.g., login, register)
 │   │   └── login/
 │   │       └── page.tsx
-│   └── api/            # API routes
-│       └── ...
-├── actions/            # Server Actions
-├── components/         # Reusable UI components
-│   ├── ui/             # Generic, reusable UI components (e.g., buttons, inputs)
-│   └── feature/        # Feature-specific components
-├── constants/          # Constants and configuration
-├── hooks/              # Custom React hooks
-├── types/              # TypeScript type definitions
-├── lib/                # Business logic, helpers, external service clients
-│   ├── date.ts         # Date utilities
-│   └── utils.ts        # Utility functions for clsx and tailwind-merge
-├── zod/                # Zod validation schemas
-├── drizzle/            # Drizzle: database client, schema, migrations
-│   └── schema/         # Drizzle schema definitions
-└── providers/          # React Context providers
+│   ├── (marketing)/       # Route group for marketing pages (e.g., landing, pricing)
+│   │   └── page.tsx
+│   ├── (app)/             # Route group for authenticated app pages
+│   │   └── dashboard/
+│   │       └── page.tsx
+│   └── api/               # API routes (Hono on Cloudflare Workers)
+│       └── route.ts
+├── actions/               # Server Actions for data mutations
+├── components/            # Reusable UI components
+│   ├── feature/           # Feature-specific components (e.g., WaitlistForm, UserProfile)
+│   └── ui/                # Generic, reusable UI components from shadcn/ui (e.g., Button, Input)
+├── constants/             # Site-wide constants and configuration
+├── drizzle/               # Drizzle ORM: database client, schema, migrations
+│   ├── migrations/        # Database migration files
+│   ├── schema/            # Drizzle schema definitions
+│   └── db.ts              # Drizzle client instance
+├── hooks/                 # Custom React hooks (e.g., useAuth, use-form-state)
+├── lib/                   # Business logic, helpers, and external service clients
+│   ├── auth/              # Authentication logic (e.g., Better Auth integration)
+│   ├── db/                # Database-related utilities and queries
+│   ├── email/             # Email sending logic (e.g., Resend integration)
+│   ├── stripe/            # Stripe integration logic
+│   ├── utils.ts           # Utility functions (e.g., clsx, tailwind-merge)
+│   └── date.ts            # Date utility functions
+├── providers/             # React Context providers (e.g., ThemeProvider, AuthProvider)
+├── types/                 # TypeScript type definitions
+└── zod/                   # Zod validation schemas
 ```
 
 ## File Naming Conventions
