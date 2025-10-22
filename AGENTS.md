@@ -175,6 +175,11 @@ Server Actions must only be used for data mutations.
 Do not use them for data fetching (queries) or GET requests.
 Their primary purpose is handling form submissions and state updates via startTransition.
 
+## Rules for using Cursor's Plan feature
+
+- First, propose a branch name
+- Do not perform git operations
+
 ## Commit Message Rules
 
 Please create commit messages according to the following example.
