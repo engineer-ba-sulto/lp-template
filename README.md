@@ -1,4 +1,4 @@
-# Next.js & Cloudflare を利用した LP テンプレート
+# Next.js & Cloudflare を利用した Waitlist LP テンプレート
 
 これは Next.js を使用して構築し、Cloudflare Workers にデプロイするためのランディングページ用テンプレートプロジェクトです。
 

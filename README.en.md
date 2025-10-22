@@ -1,4 +1,4 @@
-# LP Template with Next.js & Cloudflare
+# Waitlist LP Template with Next.js & Cloudflare
 
 This is a template project for building landing pages using Next.js, deployed on Cloudflare Workers.
 
