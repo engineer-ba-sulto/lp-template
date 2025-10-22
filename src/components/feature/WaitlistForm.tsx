@@ -15,7 +15,6 @@ export default function WaitlistForm() {
     control,
     handleSubmit,
     formState: { errors },
-    reset,
   } = useForm<WaitlistForm>({
     resolver: zodResolver(waitlistFormSchema),
     defaultValues: {
@@ -25,12 +24,7 @@ export default function WaitlistForm() {
 
   async function onSubmit(data: WaitlistForm) {
     const result = await addWaitlist(data);
-    if (result.success) {
-      toast.success(result.message, {
-        position: "top-center",
-      });
-      reset();
-    } else {
+    if (result && result.success === false) {
       toast.error(result.message, {
         position: "top-center",
         classNames: {
