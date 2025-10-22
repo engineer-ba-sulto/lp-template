@@ -4,7 +4,7 @@
  */
 {
   "$schema": "node_modules/wrangler/config-schema.json",
-  "name": "lp-template",
+  "name": "waitlist-lp-template",
   "main": ".open-next/worker.js",
   "compatibility_date": "2025-03-01",
   "compatibility_flags": ["nodejs_compat", "global_fetch_strictly_public"],
@@ -18,7 +18,7 @@
   "d1_databases": [
     {
       "binding": "lp_template_db",
-      "database_name": "lp-template-db",
+      "database_name": "waitlist-lp-template-db",
       "database_id": "d83191fa-50f2-42f0-81a0-2adaf99a26fd",
       "migrations_dir": "src/drizzle/migrations"
     }
