@@ -17,9 +17,9 @@
   },
   "d1_databases": [
     {
-      "binding": "lp_template_db",
+      "binding": "waitlist_lp_template_db",
       "database_name": "waitlist-lp-template-db",
-      "database_id": "d83191fa-50f2-42f0-81a0-2adaf99a26fd",
+      "database_id": "e6835535-8eb9-4ea2-91cc-4503dcf64a1e",
       "migrations_dir": "src/drizzle/migrations"
     }
   ]
