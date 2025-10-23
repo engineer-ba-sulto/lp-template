@@ -9,7 +9,7 @@ export function getBaseUrl(): string {
     if (process.env.NODE_ENV === "production") {
       // Cloudflare Workersの環境変数から取得
       return (
-        process.env.CF_PAGES_URL || "https://rn.engineer-ba-sulto.com"
+        process.env.CF_PAGES_URL || ""
       );
     }
     // 開発環境
