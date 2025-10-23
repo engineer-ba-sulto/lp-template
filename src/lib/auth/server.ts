@@ -1,4 +1,5 @@
 import { getDbSync } from "@/drizzle/db";
+import * as authSchema from "@/drizzle/schema/authSchema";
 import { betterAuth } from "better-auth";
 import { drizzleAdapter } from "better-auth/adapters/drizzle";
 
@@ -8,4 +9,8 @@ export const auth = betterAuth({
     provider: "sqlite",
     usePlural: true,
   }),
+  schema: {
+    ...authSchema,
+    user: authSchema.users,
+  },
 });
