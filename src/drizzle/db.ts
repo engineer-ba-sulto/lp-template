@@ -12,13 +12,7 @@ export const getDb = async () => {
 // 同期版（Better Auth CLI実行時に使用）
 // "npx @better-auth/cli@latest generate --output=./src/drizzle/schema/authSchema.ts --config=./src/lib/auth/server.ts"
 export const getDbSync = () => {
-  try {
-    const { env } = getCloudflareContext();
-    return drizzle(env.waitlist_lp_template_db);
-  } catch {
-    // CLI実行時などでCloudflareコンテキストが利用できない場合は、
-    // モックのデータベースインスタンスを返す（スキーマ生成には実際の接続は不要）
-    // eslint-disable-next-line @typescript-eslint/no-explicit-any
-    return drizzle({} as any);
-  }
+  // モックのデータベースインスタンスを返す（スキーマ生成には実際の接続は不要）
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  return drizzle({} as any);
 };
