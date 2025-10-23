@@ -16,6 +16,20 @@ export const metadata: Metadata = {
   },
   metadataBase: new URL(getBaseUrl()),
   description: "Waitlist LP Template",
+  keywords: [],
+  openGraph: {
+    title: "Waitlist LP Template",
+    description: "Waitlist LP Template",
+    type: "website",
+    locale: "ja_JP",
+    images: ["/opengraph-image.png", "/opengraph-image.jpg"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "Waitlist LP Template",
+    description: "Waitlist LP Template",
+    images: ["/opengraph-image.png", "/opengraph-image.jpg"],
+  },
 };
 
 export default function RootLayout({
