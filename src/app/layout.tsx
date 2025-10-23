@@ -14,7 +14,7 @@ export const metadata: Metadata = {
     template: "%s | Waitlist LP Template",
     default: "Waitlist LP Template",
   },
-  metadataBase: new URL(getBaseUrl()),
+  metadataBase: new URL(await getBaseUrl()),
   description: "Waitlist LP Template",
   keywords: [],
   openGraph: {
