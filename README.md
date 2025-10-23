@@ -145,25 +145,20 @@ export const metadata: Metadata = {
 
 #### 関数の仕組み
 
-- **ローカル開発環境**: `http://localhost:3000` を返します。
-- **Cloudflare Pages (本番環境)**: Cloudflare が提供する環境変数 `CF_PAGES_URL` から自動的に本番 URL を取得します。
-- **クライアントサイド**: ブラウザの `window.location.origin` を使用します。
+- **ローカル開発環境（サーバーサイド）**: `http://localhost:3000` を返します。
+- **Cloudflare Workers 本番環境（サーバーサイド）**: `CF_PAGES_URL` という環境変数から本番 URL を読み取ります。この変数は、デプロイ後に手動で設定する必要があります。
+- **クライアントサイド**: ブラウザ環境で実行される際は、`window.location.origin` を使用して現在の URL を取得します。
 
 これにより、開発時と本番時でコードを書き換えることなく、常に正しい URL がメタデータに設定されます。
 
-#### 手動での URL 設定 (フォールバック)
+#### 本番環境の URL 設定
 
-Cloudflare Pages 以外の環境にデプロイする場合や、何らかの理由で `CF_PAGES_URL` 環境変数が利用できない場合、本番環境の URL を手動で設定する必要があります。
+このプロジェクトを Cloudflare Workers にデプロイした後、本番環境で正しい OGP 画像などを表示するためには、アプリケーションの公開 URL を `CF_PAGES_URL` という名前の環境変数として設定する必要があります。
 
-その場合は、`src/lib/url-utils.ts` ファイルの `""` の部分を、あなたのアプリケーションの本番 URL に置き換えてください。
+Wrangler CLI を使って、以下のコマンドで設定できます。
 
-```typescript:src/lib/url-utils.ts
-    if (process.env.NODE_ENV === "production") {
-      // Cloudflare Workersの環境変数から取得
-      return (
-        process.env.CF_PAGES_URL || "https://your-production-url.com" // ここに本番URLを追記
-      );
-    }
+```bash
+npx wrangler secret put CF_PAGES_URL
 ```
 
 ## データベースのセットアップ (Cloudflare D1)
