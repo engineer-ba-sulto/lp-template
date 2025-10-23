@@ -63,39 +63,101 @@ bun run dev
 
 ブラウザで [http://localhost:3000](http://localhost:3000) を開いて結果を確認してください。
 
-## ページ生成
+## データベースのセットアップ (Cloudflare D1)
 
-このテンプレートには、簡単な質問に答えるだけでウェイティングリスト用のランディングページを自動生成する機能が含まれています。
+このプロジェクトではデータベースとして Cloudflare D1 を使用します。以下の手順でセットアップしてください。
 
-### 使い方
+### 1. D1 データベースの作成
 
-1.  Cursor のチャットパネルを開きます。
-2.  `/generate-waitlist-page` と入力し、コマンドを実行します。
-3.  以下の質問に順番に答えてください:
-    - アプリ名（日本語）
-    - 英語アプリ名
-    - アプリの目的・機能
-    - ターゲットユーザー
-    - 主要な価値提案
-    - 特筆すべき機能や特徴
+データベースの名前を任意に決めて、以下のコマンドで作成します。`<あなたのデータベース名>` の部分を、決めた名前に置き換えてください。
 
-回答が完了すると、`src/app/(marketing)/page.tsx` が提供された情報に基づいて自動的に更新されます。
+```bash
+npx wrangler d1 create <あなたのデータベース名>
+```
 
-## X(旧 Twitter)ポスト生成
+このコマンドでデータベースが作成され、`wrangler.jsonc`ファイルに接続情報が追記されます。
 
-簡単な質問に答えるだけで、サービスの告知やアップデート情報など、様々な用途に合わせた X の投稿文を自動で 3 パターン生成する機能です。
+### 2. `wrangler.jsonc` の設定
 
-### 使い方
+ファイルが更新された後、データベースのバインディングを設定します。
 
-1.  Cursor のチャットパネルを開きます。
-2.  `/generate-x-post` と入力し、コマンドを実行します。
-3.  以下の質問に順番に答えてください:
-    - 投稿の主題
-    - 最も伝えたいこと（アピールポイント）
-    - 投稿に含める URL
-    - トーン＆マナー（例：カジュアル、丁寧、専門的など）
+1.  **マイグレーションパスを追加（必須）:** `migrations_dir` プロパティを追加して、マイグレーションファイルを指定します。
+2.  **バインディング名を設定（任意）:** デフォルトの `"binding": "<あなたのデータベースバインディング名>"` を任意の名前に変更します (例: `"binding": "MY_DB"`)。この名前でコードからデータベースにアクセスします。デフォルトの名前で問題ない場合は、この変更は必須ではありません。
 
-回答が完了すると、提供された情報に基づいた 3 パターンの投稿文が生成されます。
+設定は以下のようになります:
+
+```jsonc:wrangler.jsonc
+"d1_databases": [
+  {
+    "binding": "<あなたのデータベースバインディング名>",
+    "database_name": "<あなたのデータベース名>",
+    "database_id": "...",
+    "migrations_dir": "src/drizzle/migrations"
+  }
+]
+```
+
+### 3. 型定義の更新
+
+次に、`cloudflare-env.d.ts` の型定義を設定します。
+`wrangler.jsonc` で設定した `<あなたのデータベースバインディング名>` を `Cloudflare.Env` インターフェースに追加してください。
+
+```typescript:cloudflare-env.d.ts
+declare namespace Cloudflare {
+  interface Env {
+    // ... 他に設定したバインディング
+    <あなたのデータベースバインディング名>: D1Database;
+  }
+}
+```
+
+> **警告** > `cloudflare-env.d.ts` ファイルは Wrangler によって管理されています。
+> 手動で加えた変更は、将来 `bunx wrangler types` を実行すると上書きされます。
+
+### 4. マイグレーションの適用
+
+まず、データベーススキーマのマイグレーションを適用します。
+ステップ 1 で作成したデータベース名を使用してください。
+
+まず、ローカルのデータベースに適用します。
+
+```bash
+npx wrangler d1 migrations apply <あなたのデータベース名> --local
+```
+
+次に、リモートのデータベースに適用します。
+
+```bash
+npx wrangler d1 migrations apply <あなたのデータベース名>
+```
+
+### 5. データベース接続コードの更新
+
+`src/drizzle/db.ts` ファイルを更新して、`wrangler.jsonc` で設定したバインディング名でデータベースに接続するようにします。
+
+`env.waitlist_lp_template_db` の `waitlist_lp_template_db` を、`<あなたのデータベースバインディング名>`に置き換えてください。
+
+**変更前:** `src/drizzle/db.ts`
+
+```typescript
+// ...
+export const getDb = async () => {
+  const { env } = await getCloudflareContext({ async: true });
+  return drizzle(env.waitlist_lp_template_db);
+};
+// ...
+```
+
+**変更後 (例):** `src/drizzle/db.ts`
+
+```typescript
+// ...
+export const getDb = async () => {
+  const { env } = await getCloudflareContext({ async: true });
+  return drizzle(env.<あなたのデータベースバインディング名>);
+};
+// ...
+```
 
 ## メタデータの設定
 
@@ -161,97 +223,48 @@ Wrangler CLI を使って、以下のコマンドで設定できます。
 npx wrangler secret put CF_PAGES_URL
 ```
 
-## データベースのセットアップ (Cloudflare D1)
+## ページ生成
 
-このプロジェクトではデータベースとして Cloudflare D1 を使用します。以下の手順でセットアップしてください。
+このテンプレートには、簡単な質問に答えるだけでウェイティングリスト用のランディングページを自動生成する機能が含まれています。
 
-### 1. D1 データベースの作成
+### 使い方
 
-データベースの名前を任意に決めて、以下のコマンドで作成します。`<あなたのデータベース名>` の部分を、決めた名前に置き換えてください。
+1.  Cursor のチャットパネルを開きます。
+2.  `/generate-waitlist-page` と入力し、コマンドを実行します。
+3.  以下の質問に順番に答えてください:
+    - アプリ名（日本語）
+    - 英語アプリ名
+    - アプリの目的・機能
+    - ターゲットユーザー
+    - 主要な価値提案
+    - 特筆すべき機能や特徴
 
-```bash
-npx wrangler d1 create <あなたのデータベース名>
-```
+回答が完了すると、`src/app/(marketing)/page.tsx` が提供された情報に基づいて自動的に更新されます。
 
-このコマンドでデータベースが作成され、`wrangler.jsonc`ファイルに接続情報が追記されます。
+## X(旧 Twitter)ポスト生成
 
-### 2. `wrangler.jsonc` の設定
+簡単な質問に答えるだけで、サービスの告知やアップデート情報など、様々な用途に合わせた X の投稿文を自動で 3 パターン生成する機能です。
 
-ファイルが更新された後、データベースのバインディングを設定します。
+### 使い方
 
-1.  **マイグレーションパスを追加（必須）:** `migrations_dir` プロパティを追加して、マイグレーションファイルを指定します。
-2.  **バインディング名を設定（任意）:** デフォルトの `"binding": "<あなたのデータベースバインディング名>"` を任意の名前に変更します (例: `"binding": "MY_DB"`)。この名前でコードからデータベースにアクセスします。デフォルトの名前で問題ない場合は、この変更は必須ではありません。
+1.  Cursor のチャットパネルを開きます。
+2.  `/generate-x-post` と入力し、コマンドを実行します。
+3.  以下の質問に順番に答えてください:
+    - 投稿の主題
+    - 最も伝えたいこと（アピールポイント）
+    - 投稿に含める URL
+    - トーン＆マナー（例：カジュアル、丁寧、専門的など）
 
-設定は以下のようになります:
+回答が完了すると、提供された情報に基づいた 3 パターンの投稿文が生成されます。
 
-```jsonc:wrangler.jsonc
-"d1_databases": [
-  {
-    "binding": "<あなたのデータベースバインディング名>",
-    "database_name": "<あなたのデータベース名>",
-    "database_id": "...",
-    "migrations_dir": "src/drizzle/migrations"
-  }
-]
-```
+## note 記事生成
 
-### 3. 型定義の更新
+サービスの魅力を伝え、ウェイティングリストへの登録を促進するための note 記事を自動生成する機能です。
+このコマンドはテンプレートとして「絵本コンテンツ生成アプリケーション」のプロモーション記事を生成します。必要に応じて `.cursor/commands/generate-note-post.md` の内容を書き換えて、ご自身のサービスに合わせてご利用ください。
 
-次に、`cloudflare-env.d.ts` の型定義を手動で更新します。
-`wrangler.jsonc` で設定した `<あなたのデータベースバインディング名>` を `Cloudflare.Env` インターフェースに追加してください。
+### 使い方
 
-```typescript:cloudflare-env.d.ts
-declare namespace Cloudflare {
-  interface Env {
-    // ... 他に設定したバインディング
-    <あなたのデータベースバインディング名>: D1Database;
-  }
-}
-```
+1.  Cursor のチャットパネルを開きます。
+2.  `/generate-note-post` と入力し、コマンドを実行します。
 
-> **警告** > `cloudflare-env.d.ts` ファイルは Wrangler によって管理されています。手動で加えた変更は、将来 `bunx wrangler types` を実行すると上書きされます。このステップは、手動で編集する代わりにこのコマンドを使用することを強く推奨します。
-
-### 4. マイグレーションの適用
-
-まず、データベーススキーマのマイグレーションを適用します。
-ステップ 1 で作成したデータベース名を使用してください。
-
-まず、ローカルのデータベースに適用します。
-
-```bash
-npx wrangler d1 migrations apply <あなたのデータベース名> --local
-```
-
-次に、リモートのデータベースに適用します。
-
-```bash
-npx wrangler d1 migrations apply <あなたのデータベース名>
-```
-
-### 5. データベース接続コードの更新
-
-`src/drizzle/db.ts` ファイルを更新して、`wrangler.jsonc` で設定したバインディング名でデータベースに接続するようにします。
-
-`env.waitlist_lp_template_db` の `waitlist_lp_template_db` を、`<あなたのデータベースバインディング名>`に置き換えてください。
-
-**変更前:** `src/drizzle/db.ts`
-
-```typescript
-// ...
-export const getDb = async () => {
-  const { env } = await getCloudflareContext({ async: true });
-  return drizzle(env.waitlist_lp_template_db);
-};
-// ...
-```
-
-**変更後 (例):** `src/drizzle/db.ts`
-
-```typescript
-// ...
-export const getDb = async () => {
-  const { env } = await getCloudflareContext({ async: true });
-  return drizzle(env.<あなたのデータベースバインディング名>);
-};
-// ...
-```
+コマンドを実行すると、`generate-note-post.md` の内容に基づいた note 記事が生成されます。
