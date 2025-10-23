@@ -8,7 +8,10 @@ export const auth = betterAuth({
   database: drizzleAdapter(getDbSync(), {
     provider: "sqlite",
     usePlural: true,
-  }),
+	}),
+	emailAndPassword: { 
+    enabled: true, 
+  }, 
   schema: {
     ...authSchema,
     user: authSchema.users,
