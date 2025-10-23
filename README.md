@@ -81,6 +81,75 @@ bun run dev
 
 回答が完了すると、`src/app/(marketing)/page.tsx` が提供された情報に基づいて自動的に更新されます。
 
+## 🌐 メタデータの設定
+
+サイト全体のメタデータ（タイトル、説明、OGP タグなど）は `src/app/layout.tsx` ファイルで設定します。
+プロジェクトに合わせてこのファイルを編集してください。
+
+```typescript:src/app/layout.tsx
+export const metadata: Metadata = {
+  title: {
+    template: "%s | あなたのアプリ名",
+    default: "あなたのアプリ名",
+  },
+  metadataBase: new URL(getBaseUrl()),
+  description: "あなたのアプリの説明",
+  keywords: ["キーワード1", "キーワード2"],
+  openGraph: {
+    title: "あなたのアプリ名",
+    description: "あなたのアプリの説明",
+    type: "website",
+    locale: "ja_JP",
+    images: ["/opengraph-image.png"],
+  },
+  twitter: {
+    card: "summary_large_image",
+    title: "あなたのアプリ名",
+    description: "あなたのアプリの説明",
+    images: ["/opengraph-image.png"],
+  },
+};
+```
+
+### 主な設定項目
+
+- **title**: サイトのタイトルです。`template` を使うと、各ページで設定したタイトルに共通の接尾辞を追加できます。
+- **description**: サイトの説明文です。検索エンジンや SNS で表示されます。
+- **openGraph**: Facebook や LINE などで共有された際に表示される情報です。
+- **twitter**: X (旧 Twitter) で共有された際に表示される情報です。
+- **images**: OGP 画像のパスです。`app` ディレクトリに `opengraph-image.png` や `opengraph-image.jpg` などの画像を配置してください。`metadataBase` を基準とした絶対パスになります。
+
+`getBaseUrl()` は `src/lib/url-utils.ts` で定義されており、開発環境と本番環境で自動的に適切な URL を返します。
+
+## 🔧 ユーティリティの設定
+
+### ベース URL の自動判別 (`src/lib/url-utils.ts`)
+
+`src/lib/url-utils.ts` に含まれる `getBaseUrl` 関数は、アプリケーションのベース URL を環境に応じて自動的に返却します。これは、`src/app/layout.tsx` で `metadataBase` を設定する際に重要です。
+
+#### 関数の仕組み
+
+- **ローカル開発環境**: `http://localhost:3000` を返します。
+- **Cloudflare Pages (本番環境)**: Cloudflare が提供する環境変数 `CF_PAGES_URL` から自動的に本番 URL を取得します。
+- **クライアントサイド**: ブラウザの `window.location.origin` を使用します。
+
+これにより、開発時と本番時でコードを書き換えることなく、常に正しい URL がメタデータに設定されます。
+
+#### 手動での URL 設定 (フォールバック)
+
+Cloudflare Pages 以外の環境にデプロイする場合や、何らかの理由で `CF_PAGES_URL` 環境変数が利用できない場合、本番環境の URL を手動で設定する必要があります。
+
+その場合は、`src/lib/url-utils.ts` ファイルの `""` の部分を、あなたのアプリケーションの本番 URL に置き換えてください。
+
+```typescript:src/lib/url-utils.ts
+    if (process.env.NODE_ENV === "production") {
+      // Cloudflare Workersの環境変数から取得
+      return (
+        process.env.CF_PAGES_URL || "https://your-production-url.com" // ここに本番URLを追記
+      );
+    }
+```
+
 ## 📦 データベースのセットアップ (Cloudflare D1)
 
 このプロジェクトではデータベースとして Cloudflare D1 を使用します。以下の手順でセットアップしてください。
