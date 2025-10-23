@@ -8,13 +8,13 @@ import { type WaitlistForm } from "@/types/waitlistForm";
 import { waitlistFormSchema } from "@/zod/waitlistForm.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";
-import { toast } from "sonner";
 
 export default function WaitlistForm() {
   const {
     control,
     handleSubmit,
     formState: { errors },
+    setError,
   } = useForm<WaitlistForm>({
     resolver: zodResolver(waitlistFormSchema),
     defaultValues: {
@@ -25,11 +25,9 @@ export default function WaitlistForm() {
   async function onSubmit(data: WaitlistForm) {
     const result = await addWaitlist(data);
     if (result && result.success === false) {
-      toast.error(result.message, {
-        position: "top-center",
-        classNames: {
-          content: "text-red-500 font-bold",
-        },
+      setError("email", {
+        type: "server",
+        message: result.message,
       });
     }
   }
