@@ -6,7 +6,6 @@ import { drizzleAdapter } from "better-auth/adapters/drizzle";
 export const auth = betterAuth({
   database: drizzleAdapter(getDbSync(), {
     provider: "sqlite",
+    usePlural: true,
   }),
 });
-
-export default auth;
