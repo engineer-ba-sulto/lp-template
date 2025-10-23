@@ -1,3 +1,4 @@
+import { getBaseUrl } from "@/lib/url-utils";
 import type { Metadata } from "next";
 import { Noto_Sans_JP } from "next/font/google";
 import { Toaster } from "sonner";
@@ -13,6 +14,7 @@ export const metadata: Metadata = {
     template: "%s | Waitlist LP Template",
     default: "Waitlist LP Template",
   },
+  metadataBase: new URL(getBaseUrl()),
   description: "Waitlist LP Template",
 };
 
