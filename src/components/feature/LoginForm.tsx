@@ -11,17 +11,38 @@ import {
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { type SignInEmail } from "@/types/auth";
+import { signInEmailSchema } from "@/zod/auth.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { Controller, useForm } from "react-hook-form";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignInEmail>({
+    resolver: zodResolver(signInEmailSchema),
+    defaultValues: {
+      email: "",
+      password: "",
+    },
+  });
+
+  const onSubmit = (data: SignInEmail) => {
+    console.log({ email: data.email, password: data.password });
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -30,28 +51,51 @@ export function LoginForm({
           <CardDescription>アカウントにログイン</CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form id="login-form" onSubmit={handleSubmit(onSubmit)}>
             <FieldGroup>
+              <Controller
+                name="email"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="email">メールアドレス</FieldLabel>
+                    <Input
+                      {...field}
+                      id="login-form-email"
+                      aria-invalid={fieldState.invalid}
+                      placeholder="example@example.com"
+                      autoComplete="email"
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[errors.email]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="password"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="password">パスワード</FieldLabel>
+                    <Input
+                      {...field}
+                      id="login-form-password"
+                      type="password"
+                      aria-invalid={fieldState.invalid}
+                      placeholder="8文字以上のパスワード"
+                      autoComplete="current-password"
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[errors.password]} />
+                    )}
+                  </Field>
+                )}
+              />
               <Field>
-                <FieldLabel htmlFor="email">メールアドレス</FieldLabel>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="example@example.com"
-                  required
-                />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="password">パスワード</FieldLabel>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="8文字以上のパスワード"
-                  required
-                />
-              </Field>
-              <Field>
-                <Button type="submit">ログイン</Button>
+                <Button type="submit" form="login-form">
+                  ログイン
+                </Button>
                 <FieldDescription className="text-center">
                   アカウントをお持ちでない方はこちら{" "}
                   <Link href="/signup" className="text-primary">

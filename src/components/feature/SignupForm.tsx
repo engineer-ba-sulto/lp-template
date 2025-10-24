@@ -11,17 +11,45 @@ import {
 import {
   Field,
   FieldDescription,
+  FieldError,
   FieldGroup,
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { cn } from "@/lib/utils";
+import { type SignUpEmail } from "@/types/auth";
+import { signUpEmailSchema } from "@/zod/auth.schema";
+import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { Controller, useForm } from "react-hook-form";
 
 export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const {
+    control,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<SignUpEmail>({
+    resolver: zodResolver(signUpEmailSchema),
+    defaultValues: {
+      name: "",
+      email: "",
+      password: "",
+      confirmPassword: "",
+    },
+  });
+
+  const onSubmit = (data: SignUpEmail) => {
+    console.log({
+      name: data.name,
+      email: data.email,
+      password: data.password,
+      confirmPassword: data.confirmPassword,
+    });
+  };
+
   return (
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
@@ -30,52 +58,99 @@ export function SignupForm({
           <CardDescription>新しいアカウントにサインイン</CardDescription>
         </CardHeader>
         <CardContent>
-          <form>
+          <form id="signup-form" onSubmit={handleSubmit(onSubmit)}>
             <FieldGroup>
+              <Controller
+                name="name"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="name">名前</FieldLabel>
+                    <Input
+                      {...field}
+                      id="signup-form-name"
+                      aria-invalid={fieldState.invalid}
+                      placeholder="山田太郎"
+                      autoComplete="name"
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[errors.name]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="email"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="email">メールアドレス</FieldLabel>
+                    <Input
+                      {...field}
+                      id="signup-form-email"
+                      aria-invalid={fieldState.invalid}
+                      placeholder="example@example.com"
+                      autoComplete="email"
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[errors.email]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="password"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="password">パスワード</FieldLabel>
+                    <Input
+                      {...field}
+                      id="signup-form-password"
+                      type="password"
+                      aria-invalid={fieldState.invalid}
+                      placeholder="8文字以上のパスワード"
+                      autoComplete="new-password"
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[errors.password]} />
+                    )}
+                  </Field>
+                )}
+              />
+              <Controller
+                name="confirmPassword"
+                control={control}
+                render={({ field, fieldState }) => (
+                  <Field data-invalid={fieldState.invalid}>
+                    <FieldLabel htmlFor="confirmPassword">
+                      パスワードを確認
+                    </FieldLabel>
+                    <Input
+                      {...field}
+                      id="signup-form-confirm-password"
+                      type="password"
+                      aria-invalid={fieldState.invalid}
+                      placeholder="パスワードを再入力"
+                      autoComplete="new-password"
+                    />
+                    {fieldState.invalid && (
+                      <FieldError errors={[errors.confirmPassword]} />
+                    )}
+                  </Field>
+                )}
+              />
               <Field>
-                <FieldLabel htmlFor="name">名前</FieldLabel>
-                <Input id="name" type="text" placeholder="山田太郎" required />
+                <Button type="submit" form="signup-form">
+                  アカウントを作成
+                </Button>
+                <FieldDescription className="text-center">
+                  アカウントをお持ちの方はこちら{" "}
+                  <Link href="/login" className="text-primary">
+                    ログイン
+                  </Link>
+                </FieldDescription>
               </Field>
-              <Field>
-                <FieldLabel htmlFor="email">メールアドレス</FieldLabel>
-                <Input
-                  id="email"
-                  type="email"
-                  placeholder="example@example.com"
-                  required
-                />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="password">パスワード</FieldLabel>
-                <Input
-                  id="password"
-                  type="password"
-                  placeholder="8文字以上のパスワード"
-                  required
-                />
-              </Field>
-              <Field>
-                <FieldLabel htmlFor="confirm-password">
-                  パスワードを確認
-                </FieldLabel>
-                <Input
-                  id="confirm-password"
-                  type="password"
-                  placeholder="パスワードを再入力"
-                  required
-                />
-              </Field>
-              <FieldGroup>
-                <Field>
-                  <Button type="submit">アカウントを作成</Button>
-                  <FieldDescription className="px-6 text-center">
-                    アカウントをお持ちの方はこちら{" "}
-                    <Link href="/login" className="text-primary">
-                      ログイン
-                    </Link>
-                  </FieldDescription>
-                </Field>
-              </FieldGroup>
             </FieldGroup>
           </form>
         </CardContent>
