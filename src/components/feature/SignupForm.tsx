@@ -22,6 +22,7 @@ import { type SignUpEmail } from "@/types/auth";
 import { signUpEmailSchema } from "@/zod/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 
 export function SignupForm({
@@ -44,7 +45,29 @@ export function SignupForm({
   });
 
   const onSubmit = async (data: SignUpEmail) => {
-    await signUpEmail(data);
+    const result = await signUpEmail(data);
+    if (result && !result.success) {
+      // サーバーエラーを適切なフィールドに設定
+      if (result.error === "email") {
+        setError("email", {
+          type: "server",
+          message: result.message,
+        });
+      } else if (result.error === "password") {
+        setError("password", {
+          type: "server",
+          message: result.message,
+        });
+      } else {
+        // 一般的なエラーの場合はemailフィールドに表示
+        setError("email", {
+          type: "server",
+          message: result.message,
+        });
+      }
+    } else if (result && result.success) {
+      redirect("/login");
+    }
   };
 
   return (
