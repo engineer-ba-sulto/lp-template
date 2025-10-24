@@ -1,5 +1,6 @@
 "use client";
 
+import { signUpEmail } from "@/actions/auth.action";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -31,6 +32,7 @@ export function SignupForm({
     control,
     handleSubmit,
     formState: { errors },
+    setError,
   } = useForm<SignUpEmail>({
     resolver: zodResolver(signUpEmailSchema),
     defaultValues: {
@@ -41,13 +43,8 @@ export function SignupForm({
     },
   });
 
-  const onSubmit = (data: SignUpEmail) => {
-    console.log({
-      name: data.name,
-      email: data.email,
-      password: data.password,
-      confirmPassword: data.confirmPassword,
-    });
+  const onSubmit = async (data: SignUpEmail) => {
+    await signUpEmail(data);
   };
 
   return (
