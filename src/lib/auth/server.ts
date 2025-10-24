@@ -10,13 +10,13 @@ export const auth = async () => {
     database: drizzleAdapter(db, {
       provider: "sqlite",
       usePlural: true,
+      schema: {
+        ...authSchema,
+        user: authSchema.users,
+      },
     }),
     emailAndPassword: {
       enabled: true,
-    },
-    schema: {
-      ...authSchema,
-      user: authSchema.users,
     },
   });
 };
