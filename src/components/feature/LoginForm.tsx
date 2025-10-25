@@ -77,8 +77,8 @@ export function LoginForm({
     <div className={cn("flex flex-col gap-6", className)} {...props}>
       <Card>
         <CardHeader>
-          <CardTitle className="text-xl">おかえりなさい</CardTitle>
-          <CardDescription>アカウントにログイン</CardDescription>
+          <CardTitle className="text-xl">ログイン</CardTitle>
+          <CardDescription>おかえりなさい</CardDescription>
         </CardHeader>
         <CardContent>
           <form id="login-form" onSubmit={handleSubmit(onSubmit)}>
