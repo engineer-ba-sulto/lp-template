@@ -2,7 +2,12 @@
 
 import { addWaitlist } from "@/actions/addWaitlist.action";
 import { Button } from "@/components/ui/button";
-import { Field, FieldError, FieldGroup } from "@/components/ui/field";
+import {
+  Field,
+  FieldError,
+  FieldGroup,
+  FieldLabel,
+} from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { type WaitlistForm } from "@/types/waitlistForm";
 import { waitlistFormSchema } from "@/zod/waitlistForm.schema";
@@ -22,15 +27,29 @@ export default function WaitlistForm() {
     },
   });
 
-  async function onSubmit(data: WaitlistForm) {
+  const onSubmit = async (data: WaitlistForm) => {
+    console.log("Form submitted with data:", data);
     const result = await addWaitlist(data);
-    if (result && result.success === false) {
-      setError("email", {
-        type: "server",
-        message: result.message,
-      });
+    console.log("Server result:", result);
+
+    if (result && !result.success) {
+      console.log("Setting error:", result.message);
+      // サーバーエラーを適切なフィールドに設定
+      if (result.error === "email") {
+        // メールアドレス関連のエラー
+        setError("email", {
+          type: "server",
+          message: result.message,
+        });
+      } else {
+        // 一般的なエラーの場合はemailフィールドに表示
+        setError("email", {
+          type: "server",
+          message: result.message,
+        });
+      }
     }
-  }
+  };
 
   return (
     <div className="w-full sm:max-w-md">
@@ -41,11 +60,12 @@ export default function WaitlistForm() {
             control={control}
             render={({ field, fieldState }) => (
               <Field data-invalid={fieldState.invalid}>
+                <FieldLabel htmlFor="email">メールアドレス</FieldLabel>
                 <Input
                   {...field}
                   id="waitlist-form-email"
                   aria-invalid={fieldState.invalid}
-                  placeholder="Enter your email"
+                  placeholder="example@example.com"
                   autoComplete="email"
                 />
                 {fieldState.invalid && <FieldError errors={[errors.email]} />}
@@ -54,7 +74,7 @@ export default function WaitlistForm() {
           />
           <Field>
             <Button type="submit" form="waitlist-form">
-              Join waitlist
+              ウェイトリストに参加
             </Button>
           </Field>
         </FieldGroup>
