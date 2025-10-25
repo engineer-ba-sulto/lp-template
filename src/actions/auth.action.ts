@@ -63,6 +63,37 @@ export const signInEmail = async (data: SignInEmail) => {
     return { success: true, data: res };
   } catch (error: unknown) {
     console.error("SignIn error:", error);
+    // Better Auth のエラーレスポンスを解析
+    if (error && typeof error === "object" && "message" in error) {
+      const message = (error as { message: string }).message;
+      // メールアドレスまたはパスワードが正しくない場合
+      if (message === "Invalid email or password") {
+        return {
+          success: false,
+          error: "email & password",
+          message: "メールアドレスまたはパスワードが正しくありません",
+        };
+      }
+      // アカウントが無効化されている場合
+      if (
+        message === "Account is disabled." ||
+        message === "User account is disabled."
+      ) {
+        return {
+          success: false,
+          error: "account",
+          message:
+            "アカウントが無効化されています。管理者にお問い合わせください。",
+        };
+      }
+      // その他のエラー
+      return {
+        success: false,
+        error: "general",
+        message: "サインインに失敗しました。もう一度お試しください。",
+      };
+    }
+    // 予期しないエラー
     return {
       success: false,
       error: "general",
