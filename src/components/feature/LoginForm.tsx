@@ -32,6 +32,7 @@ export function LoginForm({
     control,
     handleSubmit,
     formState: { errors },
+    setError,
   } = useForm<SignInEmail>({
     resolver: zodResolver(signInEmailSchema),
     defaultValues: {
