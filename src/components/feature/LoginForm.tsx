@@ -22,6 +22,7 @@ import { type SignInEmail } from "@/types/auth";
 import { signInEmailSchema } from "@/zod/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 
 export function LoginForm({
@@ -43,7 +44,33 @@ export function LoginForm({
 
   const onSubmit = async (data: SignInEmail) => {
     const result = await signInEmail(data);
-    console.log(result);
+    if (result && !result.success) {
+      // サーバーエラーを適切なフィールドに設定
+      if (result.error === "email & password") {
+        // メールアドレスとパスワードの両方にエラーを設定
+        setError("email", {
+          type: "server",
+        });
+        setError("password", {
+          type: "server",
+          message: result.message,
+        });
+      } else if (result.error === "account") {
+        // アカウント関連のエラーはemailフィールドに表示
+        setError("email", {
+          type: "server",
+          message: result.message,
+        });
+      } else {
+        // 一般的なエラーの場合はemailフィールドに表示
+        setError("email", {
+          type: "server",
+          message: result.message,
+        });
+      }
+    } else if (result && result.success) {
+      redirect("/");
+    }
   };
 
   return (
