@@ -1,5 +1,6 @@
 "use client";
 
+import { signInEmail } from "@/actions/auth.action";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -39,8 +40,9 @@ export function LoginForm({
     },
   });
 
-  const onSubmit = (data: SignInEmail) => {
-    console.log({ email: data.email, password: data.password });
+  const onSubmit = async (data: SignInEmail) => {
+    const result = await signInEmail(data);
+    console.log(result);
   };
 
   return (
