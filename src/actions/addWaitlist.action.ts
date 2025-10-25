@@ -11,7 +11,6 @@ export async function addWaitlist(data: WaitlistForm) {
     await db.insert(waitlistFormTable).values({
       email: data.email,
     });
-    redirect("/thank-you");
   } catch (error: unknown) {
     console.error("Insert failed:", error);
     // データベースエラーメッセージから重複エラーを判定
@@ -45,4 +44,7 @@ export async function addWaitlist(data: WaitlistForm) {
       message: "登録処理中にエラーが発生しました。もう一度お試しください。",
     };
   }
+
+  // 成功時のみリダイレクト
+  redirect("/thank-you");
 }
