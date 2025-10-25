@@ -1,7 +1,7 @@
 "use server";
 
 import { auth } from "@/lib/auth/server";
-import { SignUpEmail } from "@/types/auth";
+import { type SignInEmail, type SignUpEmail } from "@/types/auth";
 
 export const signUpEmail = async (data: SignUpEmail) => {
   try {
@@ -47,6 +47,26 @@ export const signUpEmail = async (data: SignUpEmail) => {
       success: false,
       error: "general",
       message: "アカウントの作成に失敗しました。もう一度お試しください。",
+    };
+  }
+};
+
+export const signInEmail = async (data: SignInEmail) => {
+  try {
+    const authInstance = await auth();
+    const res = await authInstance.api.signInEmail({
+      body: {
+        email: data.email,
+        password: data.password,
+      },
+    });
+    return { success: true, data: res };
+  } catch (error: unknown) {
+    console.error("SignIn error:", error);
+    return {
+      success: false,
+      error: "general",
+      message: "サインインに失敗しました。もう一度お試しください。",
     };
   }
 };
