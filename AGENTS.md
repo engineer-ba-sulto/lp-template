@@ -198,11 +198,27 @@ Their primary purpose is handling form submissions and state updates via startTr
 ## Commit Message Rules
 
 Please create commit messages according to the following example.
-Also, write in Japanese.
+Write in Japanese.
+Write in a way that is understandable to junior engineers.
+Include commands used, if any.
+Include reference code (links or sample code) if there is anything worth noting.
 
-```
+````
 ユーザー認証時のセッション管理バグを修正
 
 - ログイン後のセッションが正しく保持されない問題を解決
 - セキュリティトークンの有効期限チェックを追加
-```
+- セッションの仕組み: ユーザーがログインするとサーバーが一時的な識別情報を発行し、ブラウザに保存される
+
+使用したコマンド:
+- bun run db:migrate
+- bun test src/lib/auth
+
+参考コード:
+- Better Authのセッション管理: https://better-auth.com/docs/concepts/session
+- セッション検証の実装例:
+  ```typescript
+  const session = await auth.api.getSession({ headers: request.headers });
+  if (!session) throw new Error("Unauthorized");
+  ```
+````
