@@ -1,6 +1,5 @@
 "use client";
 
-import { signUpEmail } from "@/actions/auth.action";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,18 +16,20 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { authClient } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { type SignUpEmail } from "@/types/auth";
 import { signUpEmailSchema } from "@/zod/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 
 export function SignupForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const router = useRouter();
   const {
     control,
     handleSubmit,
@@ -45,29 +46,39 @@ export function SignupForm({
   });
 
   const onSubmit = async (data: SignUpEmail) => {
-    const result = await signUpEmail(data);
-    if (result && !result.success) {
-      // サーバーエラーを適切なフィールドに設定
-      if (result.error === "email") {
-        setError("email", {
-          type: "server",
-          message: result.message,
-        });
-      } else if (result.error === "password") {
-        setError("password", {
-          type: "server",
-          message: result.message,
-        });
-      } else {
-        // 一般的なエラーの場合はemailフィールドに表示
-        setError("email", {
-          type: "server",
-          message: result.message,
-        });
-      }
-    } else if (result && result.success) {
-      redirect("/login");
-    }
+    await authClient.signUp
+      .email({
+        name: data.name,
+        email: data.email,
+        password: data.password,
+      })
+      .then((res) => {
+        if (!res.error) {
+          router.push("/login");
+          return;
+        } else if (res.error) {
+          const message = res.error.message;
+          if (message === "User already exists. Use another email.") {
+            setError("email", {
+              type: "server",
+              message: "このメールアドレスは既に登録されています",
+            });
+            return;
+          }
+          if (message === "Password is required.") {
+            setError("password", {
+              type: "server",
+              message: "パスワードの形式が正しくありません",
+            });
+            return;
+          }
+          setError("email", {
+            type: "server",
+            message: "アカウントの作成に失敗しました。もう一度お試しください。",
+          });
+          return;
+        }
+      });
   };
 
   return (

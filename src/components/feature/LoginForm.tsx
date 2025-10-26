@@ -1,6 +1,5 @@
 "use client";
 
-import { signInEmail } from "@/actions/auth.action";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -17,18 +16,20 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { authClient } from "@/lib/auth/client";
 import { cn } from "@/lib/utils";
 import { type SignInEmail } from "@/types/auth";
 import { signInEmailSchema } from "@/zod/auth.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { Controller, useForm } from "react-hook-form";
 
 export function LoginForm({
   className,
   ...props
 }: React.ComponentProps<"div">) {
+  const router = useRouter();
   const {
     control,
     handleSubmit,
@@ -43,34 +44,42 @@ export function LoginForm({
   });
 
   const onSubmit = async (data: SignInEmail) => {
-    const result = await signInEmail(data);
-    if (result && !result.success) {
-      // サーバーエラーを適切なフィールドに設定
-      if (result.error === "email & password") {
-        // メールアドレスとパスワードの両方にエラーを設定
-        setError("email", {
-          type: "server",
-        });
-        setError("password", {
-          type: "server",
-          message: result.message,
-        });
-      } else if (result.error === "account") {
-        // アカウント関連のエラーはemailフィールドに表示
-        setError("email", {
-          type: "server",
-          message: result.message,
-        });
-      } else {
-        // 一般的なエラーの場合はemailフィールドに表示
-        setError("email", {
-          type: "server",
-          message: result.message,
-        });
-      }
-    } else if (result && result.success) {
-      redirect("/");
-    }
+    await authClient.signIn
+      .email({
+        email: data.email,
+        password: data.password,
+      })
+      .then((res) => {
+        if (!res.error) {
+          router.push("/");
+          return;
+        } else if (res.error) {
+          const message = res.error.message;
+          if (message === "Invalid email or password") {
+            setError("email", { type: "server" });
+            setError("password", {
+              type: "server",
+              message: "メールアドレスまたはパスワードが正しくありません",
+            });
+            return;
+          } else if (
+            message === "Account is disabled." ||
+            message === "User account is disabled."
+          ) {
+            setError("email", {
+              type: "server",
+              message:
+                "アカウントが無効化されています。管理者にお問い合わせください。",
+            });
+            return;
+          }
+          setError("email", {
+            type: "server",
+            message: "サインインに失敗しました。もう一度お試しください。",
+          });
+          return;
+        }
+      });
   };
 
   return (
