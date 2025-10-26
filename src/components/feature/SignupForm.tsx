@@ -46,39 +46,41 @@ export function SignupForm({
   });
 
   const onSubmit = async (data: SignUpEmail) => {
-    await authClient.signUp
-      .email({
+    try {
+      const res = await authClient.signUp.email({
         name: data.name,
         email: data.email,
         password: data.password,
-      })
-      .then((res) => {
-        if (!res.error) {
-          router.push("/login");
-          return;
-        } else if (res.error) {
-          const message = res.error.message;
-          if (message === "User already exists. Use another email.") {
-            setError("email", {
-              type: "server",
-              message: "このメールアドレスは既に登録されています",
-            });
-            return;
-          }
-          if (message === "Password is required.") {
-            setError("password", {
-              type: "server",
-              message: "パスワードの形式が正しくありません",
-            });
-            return;
-          }
-          setError("email", {
-            type: "server",
-            message: "アカウントの作成に失敗しました。もう一度お試しください。",
-          });
-          return;
-        }
       });
+
+      if (!res.error) {
+        router.push("/login");
+        return;
+      }
+
+      // エラーがある場合は例外を投げてcatch文で処理
+      throw new Error(res.error.message);
+    } catch (error) {
+      // エラーハンドリング
+      const message = error instanceof Error ? error.message : "Unknown error";
+
+      if (message === "User already exists. Use another email.") {
+        setError("email", {
+          type: "server",
+          message: "このメールアドレスは既に登録されています",
+        });
+      } else if (message === "Password is required.") {
+        setError("password", {
+          type: "server",
+          message: "パスワードの形式が正しくありません",
+        });
+      } else {
+        setError("email", {
+          type: "server",
+          message: "アカウントの作成に失敗しました。もう一度お試しください。",
+        });
+      }
+    }
   };
 
   return (

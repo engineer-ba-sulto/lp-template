@@ -44,42 +44,45 @@ export function LoginForm({
   });
 
   const onSubmit = async (data: SignInEmail) => {
-    await authClient.signIn
-      .email({
+    try {
+      const res = await authClient.signIn.email({
         email: data.email,
         password: data.password,
-      })
-      .then((res) => {
-        if (!res.error) {
-          router.push("/");
-          return;
-        } else if (res.error) {
-          const message = res.error.message;
-          if (message === "Invalid email or password") {
-            setError("email", { type: "server" });
-            setError("password", {
-              type: "server",
-              message: "メールアドレスまたはパスワードが正しくありません",
-            });
-            return;
-          } else if (
-            message === "Account is disabled." ||
-            message === "User account is disabled."
-          ) {
-            setError("email", {
-              type: "server",
-              message:
-                "アカウントが無効化されています。管理者にお問い合わせください。",
-            });
-            return;
-          }
-          setError("email", {
-            type: "server",
-            message: "サインインに失敗しました。もう一度お試しください。",
-          });
-          return;
-        }
       });
+
+      if (!res.error) {
+        router.push("/");
+        return;
+      }
+
+      // エラーがある場合は例外を投げてcatch文で処理
+      throw new Error(res.error.message);
+    } catch (error) {
+      // エラーハンドリング
+      const message = error instanceof Error ? error.message : "Unknown error";
+
+      if (message === "Invalid email or password") {
+        setError("email", { type: "server" });
+        setError("password", {
+          type: "server",
+          message: "メールアドレスまたはパスワードが正しくありません",
+        });
+      } else if (
+        message === "Account is disabled." ||
+        message === "User account is disabled."
+      ) {
+        setError("email", {
+          type: "server",
+          message:
+            "アカウントが無効化されています。管理者にお問い合わせください。",
+        });
+      } else {
+        setError("email", {
+          type: "server",
+          message: "サインインに失敗しました。もう一度お試しください。",
+        });
+      }
+    }
   };
 
   return (
