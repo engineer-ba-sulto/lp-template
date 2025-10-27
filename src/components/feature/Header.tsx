@@ -1,6 +1,7 @@
 "use client";
 
 import { authClient } from "@/lib/auth/client";
+import { isEmailAddressAllowed } from "@/lib/auth/domainUtils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
@@ -8,6 +9,9 @@ import { Button } from "../ui/button";
 export default function Header() {
   const router = useRouter();
   const { data: session } = authClient.useSession();
+  const isAdmin = session?.user?.email
+    ? isEmailAddressAllowed(session.user.email)
+    : false;
   return (
     <header className="border-b bg-white">
       <div className="container mx-auto px-4 py-4">
@@ -27,6 +31,20 @@ export default function Header() {
               </>
             ) : (
               <>
+                {isAdmin ? (
+                  <>
+                    <Button variant="link" asChild>
+                      <Link href="/dashboard">ダッシュボード</Link>
+                    </Button>
+                    <Button variant="link" asChild>
+                      <Link href="/admin-dashboard">管理者ダッシュボード</Link>
+                    </Button>
+                  </>
+                ) : (
+                  <Button variant="link" asChild>
+                    <Link href="/dashboard">ダッシュボード</Link>
+                  </Button>
+                )}
                 <Button
                   variant="link"
                   onClick={async () => {
