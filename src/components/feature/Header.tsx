@@ -2,9 +2,11 @@
 
 import { authClient } from "@/lib/auth/client";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { Button } from "../ui/button";
 
 export default function Header() {
+  const router = useRouter();
   const { data: session } = authClient.useSession();
   console.log("session", session);
   return (
@@ -15,12 +17,26 @@ export default function Header() {
             Waitlist LP
           </Link>
           <nav className="flex space-x-4">
-            <Button variant="link" asChild>
-              <Link href="/login">ログイン</Link>
-            </Button>
-            <Button variant="link" asChild>
-              <Link href="/signup">サインアップ</Link>
-            </Button>
+            {!session ? (
+              <>
+                <Button variant="link" asChild>
+                  <Link href="/login">ログイン</Link>
+                </Button>
+                <Button variant="link" asChild>
+                  <Link href="/signup">サインアップ</Link>
+                </Button>
+              </>
+            ) : (
+              <Button
+                variant="link"
+                onClick={async () => {
+                  await authClient.signOut();
+                  router.push("/");
+                }}
+              >
+                ログアウト
+              </Button>
+            )}
           </nav>
         </div>
       </div>
