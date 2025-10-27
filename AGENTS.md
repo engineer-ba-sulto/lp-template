@@ -145,6 +145,49 @@ Components
 - PascalCase. Suffix with `.client.tsx` or `.server.tsx` if needed for clarity.
 - UserProfile.tsx, ProductCard.tsx, SignInButton.client.tsx
 
+## Export Default Function Rules
+
+Always use `export default function` for React components and main functions.
+
+### React Components
+
+- Use `export default function` for all React components (except shadcn/ui components)
+- This ensures consistent import/export patterns across the codebase
+- Makes components easier to import and use
+- shadcn/ui components follow their own export patterns and should not be modified
+
+```typescript
+// ✅ Correct
+export default function WaitlistForm() {
+  return <div>Waitlist Form</div>;
+}
+
+// ❌ Avoid
+const WaitlistForm = () => {
+  return <div>Waitlist Form</div>;
+};
+export default WaitlistForm;
+```
+
+### Main Functions
+
+- Use `export default function` for main functions in utility files
+- This provides clear entry points for modules
+- Improves code readability and maintainability
+
+```typescript
+// ✅ Correct
+export default function processUserData(data: UserData) {
+  // processing logic
+}
+
+// ❌ Avoid
+const processUserData = (data: UserData) => {
+  // processing logic
+};
+export default processUserData;
+```
+
 Hooks
 
 - camelCase, starting with 'use'
