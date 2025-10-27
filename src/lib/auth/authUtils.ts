@@ -43,13 +43,18 @@ export async function signInWithEmail(
         message:
           "アカウントが無効化されています。管理者にお問い合わせください。",
       });
+    } else if (message === "このメールアドレスではログインできません") {
+      setError("email", {
+        type: "server",
+        message:
+          "このメールアドレスではログインできません。許可されたメールアドレスを使用してください。",
+      });
     } else {
       setError("email", {
         type: "server",
         message: "サインインに失敗しました。もう一度お試しください。",
       });
     }
-
     return false;
   }
 }
