@@ -47,7 +47,7 @@ export function LoginForm({
   const onSubmit = async (data: SignInEmail) => {
     const success = await signInWithEmail(data, setError);
     if (success) {
-      router.push("/");
+      router.push("/dashboard");
     }
   };
 
