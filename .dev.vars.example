@@ -2,8 +2,3 @@
 // この値は本番環境やプレビュー環境で自動的に設定されることがあります。
 // 例: https://your-project-name.pages.dev
 CF_PAGES_URL=
-
-// ALLOWED_EMAIL_ADDRESSES はログインを許可するメールアドレスをカンマ区切りで指定します。
-// 空の場合はすべてのメールアドレスを許可（制限なし）します。
-// 例: user1@example.com,user2@company.jp
-ALLOWED_EMAIL_ADDRESSES=
