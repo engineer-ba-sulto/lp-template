@@ -12,7 +12,6 @@ export default async function AppLayout({
   const session = await authInstance.api.getSession({
     headers: await headers(),
   });
-  console.log("session dashboard", session);
   if (!session) {
     redirect("/login");
   }

@@ -28,12 +28,8 @@ export default function WaitlistForm() {
   });
 
   const onSubmit = async (data: WaitlistForm) => {
-    console.log("Form submitted with data:", data);
     const result = await addWaitlist(data);
-    console.log("Server result:", result);
-
     if (result && !result.success) {
-      console.log("Setting error:", result.message);
       // サーバーエラーを適切なフィールドに設定
       if (result.error === "email") {
         // メールアドレス関連のエラー

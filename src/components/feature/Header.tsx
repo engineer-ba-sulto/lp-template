@@ -8,7 +8,6 @@ import { Button } from "../ui/button";
 export default function Header() {
   const router = useRouter();
   const { data: session } = authClient.useSession();
-  console.log("session", session);
   return (
     <header className="border-b bg-white">
       <div className="container mx-auto px-4 py-4">

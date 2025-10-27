@@ -14,7 +14,6 @@ export async function getBaseUrl(): Promise<string> {
     // 本番環境（Cloudflare Workers）
     if (process.env.NODE_ENV === "production") {
       // Cloudflare Workersの環境変数から取得
-      console.log("CF_PAGES_URL", env.CF_PAGES_URL);
       return env.CF_PAGES_URL || "http://localhost:3000";
     }
     // 開発環境
