@@ -16,6 +16,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { signInWithEmail } from "@/lib/auth/authUtils";
 import { cn } from "@/lib/utils";
 import { type SignInEmail } from "@/types/auth";
@@ -33,7 +34,7 @@ export function LoginForm({
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     setError,
   } = useForm<SignInEmail>({
     resolver: zodResolver(signInEmailSchema),
@@ -101,7 +102,7 @@ export function LoginForm({
               />
               <Field>
                 <Button type="submit" form="login-form">
-                  ログイン
+                  {isSubmitting ? <Spinner /> : "ログイン"}
                 </Button>
                 <FieldDescription className="text-center">
                   アカウントをお持ちでない方はこちら{" "}
