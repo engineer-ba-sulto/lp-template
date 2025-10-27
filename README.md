@@ -7,6 +7,8 @@
 - **ウェイトリストフォーム**: ユーザーをウェイトリストに登録するためのフォームです。
 - **サンクスページ**: 登録成功後に表示される感謝のページです。
 - **SNS 共有機能**: サンクスページから X（旧 Twitter）でサービスを共有できます。
+- **ユーザー認証**: メールアドレスとパスワードによるログイン・サインアップ機能
+- **ダッシュボード**: 認証されたユーザー専用のダッシュボードページ
 
 ## 技術スタック
 
@@ -28,6 +30,10 @@
 - [Cloudflare Workers](https://workers.cloudflare.com/) - デプロイメントプラットフォーム
 - [Drizzle ORM](https://orm.drizzle.team/) - SQL を書いているかのような感覚で使える TypeScript ORM
 - [Cloudflare D1](https://developers.cloudflare.com/d1/) - サーバーレス SQL データベース
+
+### 認証
+
+- [Better Auth](https://www.better-auth.com/) - モダンな認証ライブラリ
 
 ### 言語 & ランタイム
 
@@ -62,6 +68,77 @@ bun run dev
 ```
 
 ブラウザで [http://localhost:3000](http://localhost:3000) を開いて結果を確認してください。
+
+## 環境変数の設定
+
+このプロジェクトでは以下の環境変数を使用します。必要に応じて設定してください。
+
+### 開発環境での設定
+
+開発環境では、プロジェクトルートに `.env.local` ファイルを作成して環境変数を設定します。
+
+```bash
+# .env.local
+GOOGLE_ANALYTICS_ID=your_google_analytics_id
+```
+
+### 本番環境での設定（Cloudflare Workers）
+
+本番環境では、Wrangler CLI を使用して環境変数を設定します。
+
+#### 1. 公開環境変数の設定
+
+```bash
+# wrangler.jsonc の vars セクションに追加
+npx wrangler secret put GOOGLE_ANALYTICS_ID
+```
+
+#### 2. 秘密環境変数の設定
+
+```bash
+# 本番URLの設定（OGP画像などで使用）
+npx wrangler secret put CF_PAGES_URL
+```
+
+### 環境変数の一覧
+
+| 変数名                | 説明                                 | 必須             | デフォルト値            |
+| --------------------- | ------------------------------------ | ---------------- | ----------------------- |
+| `GOOGLE_ANALYTICS_ID` | Google Analytics のトラッキング ID   | 任意             | 空文字列                |
+| `CF_PAGES_URL`        | 本番環境の URL（OGP 画像などで使用） | 本番環境では必須 | `http://localhost:3000` |
+
+### 環境変数の使用例
+
+```typescript
+// Google Analytics の設定例
+<GoogleAnalytics gaId={process.env.GOOGLE_ANALYTICS_ID || ""} />;
+
+// ベースURLの取得例
+const baseUrl = await getBaseUrl(); // 環境に応じて自動判別
+```
+
+## 認証機能の設定
+
+このプロジェクトでは Better Auth を使用してユーザー認証機能を提供しています。認証機能は自動的にセットアップされており、追加の設定は不要です。
+
+### 認証機能の概要
+
+- **ログイン**: メールアドレスとパスワードによる認証
+- **サインアップ**: 新規ユーザー登録
+- **セッション管理**: 自動的なセッション管理とセキュリティ
+- **ルート保護**: 認証が必要なページの自動リダイレクト
+
+### 認証が必要なページ
+
+- `/dashboard` - ダッシュボードページ（認証が必要）
+- 未認証のユーザーは自動的に `/login` にリダイレクトされます
+
+### 認証フロー
+
+1. ユーザーが `/signup` でアカウントを作成
+2. 作成後、自動的にログイン状態になる
+3. `/dashboard` にアクセス可能
+4. ログアウト後は `/login` で再ログイン
 
 ## データベースのセットアップ (Cloudflare D1)
 
@@ -130,6 +207,13 @@ npx wrangler d1 migrations apply <あなたのデータベース名> --local
 ```bash
 npx wrangler d1 migrations apply <あなたのデータベース名>
 ```
+
+> **注意** > 認証機能を使用する場合、マイグレーションには以下のテーブルが含まれます：
+>
+> - `users` - ユーザー情報
+> - `sessions` - セッション管理
+> - `accounts` - アカウント情報
+> - `verifications` - メール認証など
 
 ### 5. データベース接続コードの更新
 
@@ -222,6 +306,29 @@ Wrangler CLI を使って、以下のコマンドで設定できます。
 ```bash
 npx wrangler secret put CF_PAGES_URL
 ```
+
+> **注意** > 環境変数の設定については、上記の「環境変数の設定」セクションも参照してください。
+
+## 認証機能のカスタマイズ
+
+### 認証設定の変更
+
+認証機能の設定は `src/lib/auth/server.ts` で管理されています。必要に応じて以下の設定を変更できます：
+
+- **認証方法**: 現在はメールアドレスとパスワードのみ対応
+- **セッション設定**: セッションの有効期限やセキュリティ設定
+- **データベース設定**: 認証データの保存方法
+
+### 認証フォームのカスタマイズ
+
+ログイン・サインアップフォームは以下のファイルで管理されています：
+
+- `src/components/feature/LoginForm.tsx` - ログインフォーム
+- `src/components/feature/SignupForm.tsx` - サインアップフォーム
+
+### ルート保護の追加
+
+新しいページを認証必須にする場合は、`src/app/(app)/layout.tsx` を参考にレイアウトファイルを作成してください。
 
 ## ページ生成
 
