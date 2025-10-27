@@ -9,6 +9,8 @@
 - **SNS 共有機能**: サンクスページから X（旧 Twitter）でサービスを共有できます。
 - **ユーザー認証**: メールアドレスとパスワードによるログイン・サインアップ機能
 - **ダッシュボード**: 認証されたユーザー専用のダッシュボードページ
+- **管理者ダッシュボード**: ウェイトリストデータの管理・確認が可能な管理者専用ページ
+- **メールアドレス制限**: 管理者権限を特定のメールアドレスに制限する機能
 
 ## 技術スタック
 
@@ -80,6 +82,7 @@ bun run dev
 ```bash
 # .env.local
 GOOGLE_ANALYTICS_ID=your_google_analytics_id
+NEXT_PUBLIC_ALLOWED_EMAIL_ADDRESSES=admin@example.com,manager@example.com
 ```
 
 ### 本番環境での設定（Cloudflare Workers）
@@ -98,14 +101,18 @@ npx wrangler secret put GOOGLE_ANALYTICS_ID
 ```bash
 # 本番URLの設定（OGP画像などで使用）
 npx wrangler secret put CF_PAGES_URL
+
+# 管理者メールアドレスの設定（管理者権限制御用）
+npx wrangler secret put NEXT_PUBLIC_ALLOWED_EMAIL_ADDRESSES
 ```
 
 ### 環境変数の一覧
 
-| 変数名                | 説明                                 | 必須             | デフォルト値            |
-| --------------------- | ------------------------------------ | ---------------- | ----------------------- |
-| `GOOGLE_ANALYTICS_ID` | Google Analytics のトラッキング ID   | 任意             | 空文字列                |
-| `CF_PAGES_URL`        | 本番環境の URL（OGP 画像などで使用） | 本番環境では必須 | `http://localhost:3000` |
+| 変数名                                | 説明                                                   | 必須             | デフォルト値            |
+| ------------------------------------- | ------------------------------------------------------ | ---------------- | ----------------------- |
+| `GOOGLE_ANALYTICS_ID`                 | Google Analytics のトラッキング ID                     | 任意             | 空文字列                |
+| `CF_PAGES_URL`                        | 本番環境の URL（OGP 画像などで使用）                   | 本番環境では必須 | `http://localhost:3000` |
+| `NEXT_PUBLIC_ALLOWED_EMAIL_ADDRESSES` | 管理者アクセスを許可するメールアドレス（カンマ区切り） | 任意             | 空文字列（制限なし）    |
 
 ### 環境変数の使用例
 
@@ -115,6 +122,10 @@ npx wrangler secret put CF_PAGES_URL
 
 // ベースURLの取得例
 const baseUrl = await getBaseUrl(); // 環境に応じて自動判別
+
+// メールアドレス制限の設定例
+const allowedEmails =
+  process.env.NEXT_PUBLIC_ALLOWED_EMAIL_ADDRESSES?.split(",") || [];
 ```
 
 ## 認証機能の設定
@@ -130,15 +141,44 @@ const baseUrl = await getBaseUrl(); // 環境に応じて自動判別
 
 ### 認証が必要なページ
 
-- `/dashboard` - ダッシュボードページ（認証が必要）
+- `/dashboard` - 一般ユーザー用ダッシュボードページ（認証が必要）
+- `/admin-dashboard` - 管理者用ダッシュボードページ（認証 + 管理者権限が必要）
 - 未認証のユーザーは自動的に `/login` にリダイレクトされます
+- 一般ユーザーが管理者ページにアクセスした場合は `/dashboard` にリダイレクトされます
 
 ### 認証フロー
 
 1. ユーザーが `/signup` でアカウントを作成
 2. 作成後、自動的にログイン状態になる
-3. `/dashboard` にアクセス可能
+3. メールアドレスに基づいて適切なダッシュボードにリダイレクト
+   - 管理者メールアドレス: `/admin-dashboard` にリダイレクト
+   - 一般ユーザー: `/dashboard` にリダイレクト
 4. ログアウト後は `/login` で再ログイン
+
+### 管理者権限の設定
+
+管理者権限は `NEXT_PUBLIC_ALLOWED_EMAIL_ADDRESSES` 環境変数で制御されます。
+
+#### 開発環境での設定
+
+```bash
+# .env.local
+NEXT_PUBLIC_ALLOWED_EMAIL_ADDRESSES=admin@example.com,manager@example.com
+```
+
+#### 本番環境での設定
+
+```bash
+# 公開環境変数として設定
+npx wrangler secret put NEXT_PUBLIC_ALLOWED_EMAIL_ADDRESSES
+```
+
+#### 管理者権限の動作
+
+- 環境変数が設定されていない場合: すべてのユーザーが一般ユーザーとして扱われる
+- 環境変数が設定されている場合: 指定されたメールアドレスのみが管理者権限を持つ
+- 管理者は `/admin-dashboard` でウェイトリストデータの管理が可能
+- 一般ユーザーは `/dashboard` のみアクセス可能
 
 ## データベースのセットアップ (Cloudflare D1)
 
@@ -329,6 +369,41 @@ npx wrangler secret put CF_PAGES_URL
 ### ルート保護の追加
 
 新しいページを認証必須にする場合は、`src/app/(app)/layout.tsx` を参考にレイアウトファイルを作成してください。
+
+### 管理者権限の実装
+
+管理者権限が必要なページを作成する場合は、`src/app/(admin)/admin-dashboard/layout.tsx` を参考にレイアウトファイルを作成してください。
+
+```typescript
+// 管理者権限チェックの例
+import { isEmailAddressAllowed } from "@/lib/auth/domainUtils";
+import { auth } from "@/lib/auth/server";
+import { headers } from "next/headers";
+import { redirect } from "next/navigation";
+
+export default async function AdminLayout({
+  children,
+}: {
+  children: React.ReactNode;
+}) {
+  const authInstance = await auth();
+  const session = await authInstance.api.getSession({
+    headers: await headers(),
+  });
+
+  // セッションがない場合はログインページにリダイレクト
+  if (!session) {
+    redirect("/login");
+  }
+
+  // 許可されたメールアドレスかチェック
+  if (!isEmailAddressAllowed(session.user.email)) {
+    redirect("/dashboard"); // 一般ユーザーダッシュボードにリダイレクト
+  }
+
+  return <>{children}</>;
+}
+```
 
 ## ページ生成
 
