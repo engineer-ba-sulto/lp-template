@@ -1,4 +1,5 @@
 import { getWaitlist } from "@/actions/getWaitlist.action";
+import DownloadWaitlistButton from "@/components/feature/DownloadWaitlistButton";
 import WaitlistTable from "@/components/feature/WaitlistTable";
 import { Metadata } from "next";
 
@@ -26,6 +27,7 @@ export default async function DashboardPage() {
               <div className="text-sm text-muted-foreground">
                 総登録数: {waitlistData.length}件
               </div>
+              <DownloadWaitlistButton data={waitlistData} />
             </div>
           </div>
 
