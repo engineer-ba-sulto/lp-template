@@ -18,6 +18,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Spinner } from "@/components/ui/spinner";
 import { signInWithEmail } from "@/lib/auth/authUtils";
+import { isEmailAddressAllowed } from "@/lib/auth/domainUtils";
 import { cn } from "@/lib/utils";
 import { type SignInEmail } from "@/types/auth";
 import { signInEmailSchema } from "@/zod/auth.schema";
@@ -47,7 +48,9 @@ export function LoginForm({
   const onSubmit = async (data: SignInEmail) => {
     const success = await signInWithEmail(data, setError);
     if (success) {
-      router.push("/admin-dashboard");
+      // メールアドレスに基づいて適切なダッシュボードにリダイレクト
+      const isAdmin = isEmailAddressAllowed(data.email);
+      router.push(isAdmin ? "/admin-dashboard" : "/dashboard");
     }
   };
 
