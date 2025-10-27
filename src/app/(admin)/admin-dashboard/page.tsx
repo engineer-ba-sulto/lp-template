@@ -4,7 +4,7 @@ import WaitlistTable from "@/components/feature/WaitlistTable";
 import { Metadata } from "next";
 
 export const metadata: Metadata = {
-  title: "Dashboard",
+  title: "管理者ダッシュボード",
 };
 
 export default async function DashboardPage() {
@@ -14,9 +14,9 @@ export default async function DashboardPage() {
     <div className="container mx-auto py-8 px-4">
       <div className="space-y-6">
         <div>
-          <h1 className="text-3xl font-bold">ダッシュボード</h1>
+          <h1 className="text-3xl font-bold">管理者ダッシュボード</h1>
           <p className="text-muted-foreground">
-            ウェイトリストに登録されたデータを確認できます
+            ウェイトリストに登録されたデータを管理・確認できます
           </p>
         </div>
 

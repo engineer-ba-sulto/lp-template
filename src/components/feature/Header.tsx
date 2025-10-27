@@ -26,15 +26,17 @@ export default function Header() {
                 </Button>
               </>
             ) : (
-              <Button
-                variant="link"
-                onClick={async () => {
-                  await authClient.signOut();
-                  router.push("/");
-                }}
-              >
-                ログアウト
-              </Button>
+              <>
+                <Button
+                  variant="link"
+                  onClick={async () => {
+                    await authClient.signOut();
+                    router.push("/");
+                  }}
+                >
+                  ログアウト
+                </Button>
+              </>
             )}
           </nav>
         </div>
