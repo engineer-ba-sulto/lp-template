@@ -16,7 +16,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { authClient } from "@/lib/auth/client";
+import { signUpWithEmail } from "@/lib/auth/authUtils";
 import { cn } from "@/lib/utils";
 import { type SignUpEmail } from "@/types/auth";
 import { signUpEmailSchema } from "@/zod/auth.schema";
@@ -46,40 +46,9 @@ export function SignupForm({
   });
 
   const onSubmit = async (data: SignUpEmail) => {
-    try {
-      const res = await authClient.signUp.email({
-        name: data.name,
-        email: data.email,
-        password: data.password,
-      });
-
-      if (!res.error) {
-        router.push("/login");
-        return;
-      }
-
-      // エラーがある場合は例外を投げてcatch文で処理
-      throw new Error(res.error.message);
-    } catch (error) {
-      // エラーハンドリング
-      const message = error instanceof Error ? error.message : "Unknown error";
-
-      if (message === "User already exists. Use another email.") {
-        setError("email", {
-          type: "server",
-          message: "このメールアドレスは既に登録されています",
-        });
-      } else if (message === "Password is required.") {
-        setError("password", {
-          type: "server",
-          message: "パスワードの形式が正しくありません",
-        });
-      } else {
-        setError("email", {
-          type: "server",
-          message: "アカウントの作成に失敗しました。もう一度お試しください。",
-        });
-      }
+    const success = await signUpWithEmail(data, setError);
+    if (success) {
+      router.push("/login");
     }
   };
 

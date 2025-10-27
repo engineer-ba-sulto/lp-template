@@ -16,7 +16,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { authClient } from "@/lib/auth/client";
+import { signInWithEmail } from "@/lib/auth/authUtils";
 import { cn } from "@/lib/utils";
 import { type SignInEmail } from "@/types/auth";
 import { signInEmailSchema } from "@/zod/auth.schema";
@@ -44,44 +44,9 @@ export function LoginForm({
   });
 
   const onSubmit = async (data: SignInEmail) => {
-    try {
-      const res = await authClient.signIn.email({
-        email: data.email,
-        password: data.password,
-      });
-
-      if (!res.error) {
-        router.push("/");
-        return;
-      }
-
-      // エラーがある場合は例外を投げてcatch文で処理
-      throw new Error(res.error.message);
-    } catch (error) {
-      // エラーハンドリング
-      const message = error instanceof Error ? error.message : "Unknown error";
-
-      if (message === "Invalid email or password") {
-        setError("email", { type: "server" });
-        setError("password", {
-          type: "server",
-          message: "メールアドレスまたはパスワードが正しくありません",
-        });
-      } else if (
-        message === "Account is disabled." ||
-        message === "User account is disabled."
-      ) {
-        setError("email", {
-          type: "server",
-          message:
-            "アカウントが無効化されています。管理者にお問い合わせください。",
-        });
-      } else {
-        setError("email", {
-          type: "server",
-          message: "サインインに失敗しました。もう一度お試しください。",
-        });
-      }
+    const success = await signInWithEmail(data, setError);
+    if (success) {
+      router.push("/");
     }
   };
 
