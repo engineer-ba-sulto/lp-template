@@ -16,6 +16,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { Spinner } from "@/components/ui/spinner";
 import { signUpWithEmail } from "@/lib/auth/authUtils";
 import { cn } from "@/lib/utils";
 import { type SignUpEmail } from "@/types/auth";
@@ -33,7 +34,7 @@ export function SignupForm({
   const {
     control,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
     setError,
   } = useForm<SignUpEmail>({
     resolver: zodResolver(signUpEmailSchema),
@@ -144,7 +145,7 @@ export function SignupForm({
               />
               <Field>
                 <Button type="submit" form="signup-form">
-                  アカウントを作成
+                  {isSubmitting ? <Spinner /> : "アカウントを作成"}
                 </Button>
                 <FieldDescription className="text-center">
                   アカウントをお持ちの方はこちら{" "}
