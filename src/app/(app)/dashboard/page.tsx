@@ -1,4 +1,4 @@
-import { getWaitlist } from "@/actions/getWaitlist.action";
+import { getWaitlist } from "@/actions/waitlist.action";
 import DownloadWaitlistButton from "@/components/feature/DownloadWaitlistButton";
 import WaitlistTable from "@/components/feature/WaitlistTable";
 import { Metadata } from "next";
