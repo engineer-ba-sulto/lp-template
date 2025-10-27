@@ -9,7 +9,7 @@ import {
   FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
-import { type WaitlistForm } from "@/types/waitlistForm";
+import { type WaitlistForm } from "@/types/waitlist";
 import { waitlistFormSchema } from "@/zod/waitlistForm.schema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Controller, useForm } from "react-hook-form";

@@ -6,14 +6,10 @@ import {
   downloadCsvFile,
   generateTimestamp,
 } from "@/lib/csvUtils";
-import { type WaitlistRecord } from "@/types/waitlistForm";
+import { type Waitlist } from "@/types/waitlist";
 import { Download } from "lucide-react";
 
-export default function DownloadWaitlistButton({
-  data,
-}: {
-  data: WaitlistRecord[];
-}) {
+export default function DownloadWaitlistButton({ data }: { data: Waitlist[] }) {
   const handleDownload = () => {
     if (data.length === 0) {
       alert("ダウンロードするデータがありません");

@@ -1,4 +1,4 @@
-import { type WaitlistRecord } from "@/types/waitlistForm";
+import { type Waitlist } from "@/types/waitlist";
 import { format } from "date-fns";
 
 /**
@@ -22,7 +22,7 @@ function escapeCsvValue(value: string): string {
  * @param data - ウェイトリストデータの配列
  * @returns CSV形式の文字列（BOM付きUTF-8）
  */
-export function convertWaitlistToCsv(data: WaitlistRecord[]): string {
+export function convertWaitlistToCsv(data: Waitlist[]): string {
   // ヘッダー行
   const headers = ["メールアドレス", "登録日時"];
 

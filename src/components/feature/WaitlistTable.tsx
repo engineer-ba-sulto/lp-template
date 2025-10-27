@@ -8,11 +8,11 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import { type WaitlistRecord } from "@/types/waitlistForm";
+import { type Waitlist } from "@/types/waitlist";
 import { format } from "date-fns";
 import { ja } from "date-fns/locale";
 
-export default function WaitlistTable({ data }: { data: WaitlistRecord[] }) {
+export default function WaitlistTable({ data }: { data: Waitlist[] }) {
   if (data.length === 0) {
     return (
       <div className="text-center py-8 text-muted-foreground">
