@@ -1,0 +1,4 @@
+// CF_PAGES_URL はCloudflare Pagesのデプロイ先URLを指定します。
+// この値は本番環境やプレビュー環境で自動的に設定されることがあります。
+// 例: https://your-project-name.pages.dev
+CF_PAGES_URL=
