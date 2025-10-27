@@ -1,6 +1,6 @@
 "use client";
 
-import { addWaitlist } from "@/actions/addWaitlist.action";
+import { addWaitlist } from "@/actions/waitlist.action";
 import { Button } from "@/components/ui/button";
 import {
   Field,
