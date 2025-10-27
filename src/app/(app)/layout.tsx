@@ -12,9 +12,12 @@ export default async function AppLayout({
   const session = await authInstance.api.getSession({
     headers: await headers(),
   });
+
+  // セッションがない場合はログインページにリダイレクト
   if (!session) {
     redirect("/login");
   }
+
   return (
     <>
       <Header />
