@@ -47,3 +47,12 @@ CREATE TABLE `verifications` (
 	`created_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL,
 	`updated_at` integer DEFAULT (cast(unixepoch('subsecond') * 1000 as integer)) NOT NULL
 );
+--> statement-breakpoint
+CREATE TABLE `waitlist_table` (
+	`id` text PRIMARY KEY NOT NULL,
+	`email` text NOT NULL,
+	`created_at` text NOT NULL,
+	`updated_at` text NOT NULL
+);
+--> statement-breakpoint
+CREATE UNIQUE INDEX `waitlist_table_email_unique` ON `waitlist_table` (`email`);
