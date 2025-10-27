@@ -2,7 +2,7 @@ import { getCurrentDateInJST } from "@/lib/date";
 import { sqliteTable, text } from "drizzle-orm/sqlite-core";
 import { nanoid } from "nanoid";
 
-export const waitlistFormTable = sqliteTable("waitlist_form_table", {
+export const waitlistTable = sqliteTable("waitlist_table", {
   id: text("id")
     .primaryKey()
     .notNull()
