@@ -9,7 +9,7 @@
  */
 export function isEmailAddressAllowed(email: string): boolean {
   // 環境変数が設定されていない場合は制限なし（すべて許可）
-  const allowedEmailsEnv = process.env.ALLOWED_EMAIL_ADDRESSES;
+  const allowedEmailsEnv = process.env.NEXT_PUBLIC_ALLOWED_EMAIL_ADDRESSES;
   console.log("allowedEmailsEnv:", allowedEmailsEnv);
   if (!allowedEmailsEnv || allowedEmailsEnv.trim() === "") {
     return true;
