@@ -12,26 +12,14 @@ import { isEmailAddressAllowed } from "@/lib/auth/domainUtils";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
-import { Spinner } from "../ui/spinner";
 
 export default function UserDropdownMenu() {
-  const { data: session, isPending, error } = authClient.useSession();
+  const { data: session } = authClient.useSession();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const router = useRouter();
   const isAdmin = session?.user?.email
     ? isEmailAddressAllowed(session.user.email)
     : false;
-
-  // ローディング状態の処理
-  if (isPending) {
-    return <Spinner />;
-  }
-
-  // エラー状態の処理
-  if (error) {
-    console.error("Session error:", error);
-    return null;
-  }
 
   return (
     <div className="flex items-center space-x-2">
@@ -64,7 +52,6 @@ export default function UserDropdownMenu() {
               <p className="text-xs text-gray-500">@{session?.user.name}</p>
             )}
           </div>
-
           {!session ? (
             <>
               <DropdownMenuItem asChild>
