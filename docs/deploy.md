@@ -39,3 +39,9 @@ npx wrangler secret put CF_PAGES_URL
 ```bash
 npx wrangler secret put NEXT_PUBLIC_ALLOWED_EMAIL_ADDRESSES
 ```
+
+## 3. カスタムドメインの設定
+
+Cloudflare Dashboard からカスタムドメインを設定します。
+Workers & Pages のページからプロジェクトを選択します。
+設定、ドメインとルートから追加ボタンで、カスタムドメインを設定します。
