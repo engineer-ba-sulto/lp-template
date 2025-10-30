@@ -197,11 +197,17 @@ Types
 
 - feature name + purpose
 - auth.ts, user.ts, api.ts
+- **When Zod schemas exist, generate type definitions from Zod schemas**
+- Use `z.infer<typeof schema>` instead of hardcoding
+- Place type definitions in `src/types/` and import Zod schemas to generate types
 
 Zod Schemas (Validation)
 
 - camelCase. Suffix with `.schema.ts`. Located in `src/zod/`. Schema objects should be camelCase and suffixed with `Schema`.
 - login.schema.ts, updateUser.schema.ts (defines `loginSchema`, `updateUserSchema`)
+- **Serves as the single source of truth for type definitions**
+- When schemas are changed, type definitions generated with `z.infer` are automatically updated
+- Avoid duplication of type definitions through hardcoding
 
 Database Schemas (Drizzle)
 
